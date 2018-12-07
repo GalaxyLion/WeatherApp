@@ -1,5 +1,5 @@
 <resources>
-    <string name="base_url" translatable="false">http://api.openweathermap.org/data/2.5/weather/</string>
+    <string name="base_url" translatable="false">http://api.openweathermap.org/data/2.5/</string>
     <string name="app_name">WeatherApp</string>
     <string name="back_message">Please click BACK again to exit</string>
 </resources>

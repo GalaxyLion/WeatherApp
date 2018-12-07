@@ -1,7 +1,7 @@
 package com.example.galax.weatherapp.data.mappers;
 
 import com.example.galax.weatherapp.data.models.Weather;
-import com.example.galax.weatherapp.rest.DTO.oneDayDTO.Response;
+import com.example.galax.weatherapp.rest.DTO.Response;
 
 public class WeatherDTOMapper implements Mapper<Response, Weather> {
     @Override

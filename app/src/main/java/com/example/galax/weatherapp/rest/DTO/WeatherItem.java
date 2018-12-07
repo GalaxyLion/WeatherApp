@@ -1,4 +1,4 @@
-package com.example.galax.weatherapp.rest.DTO.fiveDaysDTO;
+package com.example.galax.weatherapp.rest.DTO;
 
 
 import com.google.gson.annotations.SerializedName;

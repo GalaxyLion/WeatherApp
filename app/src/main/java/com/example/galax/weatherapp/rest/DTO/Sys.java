@@ -1,4 +1,4 @@
-package com.example.galax.weatherapp.rest.DTO.oneDayDTO;
+package com.example.galax.weatherapp.rest.DTO;
 
 
 import com.google.gson.annotations.SerializedName;
@@ -53,7 +53,7 @@ public class Sys{
 	@Override
  	public String toString(){
 		return 
-			"Sys{" + 
+			"SysForecast{" +
 			"country = '" + country + '\'' + 
 			",sunrise = '" + sunrise + '\'' + 
 			",sunset = '" + sunset + '\'' + 

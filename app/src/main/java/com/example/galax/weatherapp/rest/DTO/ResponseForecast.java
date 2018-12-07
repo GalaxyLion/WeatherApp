@@ -1,13 +1,13 @@
-package com.example.galax.weatherapp.rest.DTO.fiveDaysDTO;
+package com.example.galax.weatherapp.rest.DTO;
 
 import java.util.List;
 
 import com.google.gson.annotations.SerializedName;
 
-public class Response{
+public class ResponseForecast {
 
 	@SerializedName("city")
-	private City city;
+	private CityForecast cityForecast;
 
 	@SerializedName("cnt")
 	private int cnt;
@@ -19,14 +19,14 @@ public class Response{
 	private double message;
 
 	@SerializedName("list")
-	private List<ListItem> list;
+	private List<ListItemForecast> list;
 
-	public void setCity(City city){
-		this.city = city;
+	public void setCityForecast(CityForecast cityForecast){
+		this.cityForecast = cityForecast;
 	}
 
-	public City getCity(){
-		return city;
+	public CityForecast getCityForecast(){
+		return cityForecast;
 	}
 
 	public void setCnt(int cnt){
@@ -53,19 +53,19 @@ public class Response{
 		return message;
 	}
 
-	public void setList(List<ListItem> list){
+	public void setList(List<ListItemForecast> list){
 		this.list = list;
 	}
 
-	public List<ListItem> getList(){
+	public List<ListItemForecast> getList(){
 		return list;
 	}
 
 	@Override
  	public String toString(){
 		return 
-			"Response{" + 
-			"city = '" + city + '\'' + 
+			"ResponseForecast{" +
+			"cityForecast = '" + cityForecast + '\'' +
 			",cnt = '" + cnt + '\'' + 
 			",cod = '" + cod + '\'' + 
 			",message = '" + message + '\'' + 

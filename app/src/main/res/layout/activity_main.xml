@@ -155,6 +155,7 @@
                 app:layout_constraintStart_toEndOf="@id/third_day"
                 app:layout_constraintTop_toTopOf="parent" />
 
+
             <FrameLayout
                 android:id="@+id/fifth_day"
                 android:layout_width="70dp"
@@ -193,7 +194,7 @@
          android:layout_marginStart="8dp"
          android:layout_marginTop="16dp"
          android:drawableStart="@android:drawable/ic_search_category_default"
-         android:hint="City"
+         android:hint="CityForecast"
          app:layout_constraintEnd_toEndOf="parent"
          app:layout_constraintStart_toStartOf="parent"
          app:layout_constraintTop_toTopOf="parent" />

@@ -1,4 +1,4 @@
-package com.example.galax.weatherapp.rest.DTO.oneDayDTO;
+package com.example.galax.weatherapp.rest.DTO;
 
 import java.util.List;
 import com.google.gson.annotations.SerializedName;
@@ -22,7 +22,7 @@ public class Response{
 	private int cod;
 
 	@SerializedName("main")
-	private Main main;
+	private MainForecast main;
 
 	@SerializedName("clouds")
 	private Clouds clouds;
@@ -79,11 +79,11 @@ public class Response{
 		return cod;
 	}
 
-	public void setMain(Main main){
+	public void setMain(MainForecast main){
 		this.main = main;
 	}
 
-	public Main getMain(){
+	public MainForecast getMain(){
 		return main;
 	}
 
@@ -130,7 +130,7 @@ public class Response{
 	@Override
  	public String toString(){
 		return 
-			"Response{" + 
+			"ResponseForecast{" +
 			"dt = '" + dt + '\'' + 
 			",coord = '" + coord + '\'' + 
 			",weather = '" + weather + '\'' + 

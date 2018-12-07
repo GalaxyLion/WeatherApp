@@ -1,9 +1,9 @@
-package com.example.galax.weatherapp.rest.DTO.fiveDaysDTO;
+package com.example.galax.weatherapp.rest.DTO;
 
 import com.google.gson.annotations.SerializedName;
 
 
-public class Sys{
+public class SysForecast {
 
 	@SerializedName("pod")
 	private String pod;
@@ -19,7 +19,7 @@ public class Sys{
 	@Override
  	public String toString(){
 		return 
-			"Sys{" + 
+			"SysForecast{" +
 			"pod = '" + pod + '\'' + 
 			"}";
 		}

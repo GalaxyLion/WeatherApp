@@ -11,6 +11,10 @@ import com.example.galax.weatherapp.R;
 import com.example.galax.weatherapp.data.models.Weather;
 import com.jakewharton.rxbinding2.widget.RxTextView;
 
+
+import java.util.ArrayList;
+import java.util.List;
+
 import io.reactivex.Observable;
 
 public class WeatherView implements WeatherContract.View {
@@ -23,22 +27,21 @@ public class WeatherView implements WeatherContract.View {
     private View empty;
     private View progress;
     private View searchResult;
+
     private FrameLayout pressure;
     private FrameLayout humidity;
     private FrameLayout wind;
-    private FrameLayout firstWeatherDay;
-    private FrameLayout secondWeatherDay;
-    private FrameLayout thirdWeatherDay;
-    private FrameLayout fourthWeatherDay;
-    private FrameLayout fifthWeatherDay;
 
-
+    private List<FrameLayout> weatherDays;
     private LayoutInflater inflater;
 
 
     private TextView textViewPressure;
     private TextView textViewHumidity;
     private TextView textViewWind;
+    private List<WeatherDays> daysList;
+
+
 
 
     public WeatherView(View root) {
@@ -61,38 +64,74 @@ public class WeatherView implements WeatherContract.View {
         humidity = root.findViewById(R.id.humidity);
         wind = root.findViewById(R.id.wind);
 
-        firstWeatherDay = root.findViewById(R.id.first_day);
-        secondWeatherDay = root.findViewById(R.id.second_day);
-        thirdWeatherDay = root.findViewById(R.id.third_day);
-        fourthWeatherDay = root.findViewById(R.id.fourth_day);
-        fifthWeatherDay = root.findViewById(R.id.fifth_day);
+        weatherDays = new ArrayList<>();
+        weatherDays.add(root.findViewById(R.id.first_day));
+        weatherDays.add(root.findViewById(R.id.second_day));
+        weatherDays.add(root.findViewById(R.id.third_day));
+        weatherDays.add(root.findViewById(R.id.fourth_day));
+        weatherDays.add(root.findViewById(R.id.fifth_day));
+        daysList = new ArrayList<>();
 
 
-        setIndicatorWeather(pressure);
-        setIndicatorWeather(humidity);
-        setIndicatorWeather(wind);
+        initIndicatorWeather(pressure);
+        initIndicatorWeather(humidity);
+        initIndicatorWeather(wind);
+        initForecast();
+        //setForecast();
+
 
 
     }
 
-    private void setIndicatorWeather(FrameLayout layout){
-        View characterView = inflater.inflate(R.layout.weather_character, layout);
-        ImageView imageViewCharacter = characterView.findViewById(R.id.character_image);
-        TextView textViewCharacter = characterView.findViewById(R.id.character);
+    private void initIndicatorWeather(FrameLayout layout){
+        View indicatorsWeatherView = inflater.inflate(R.layout.weather_character, layout);
+        ImageView imageViewIndicator = indicatorsWeatherView.findViewById(R.id.character_image);
+        TextView textViewIndicator = indicatorsWeatherView.findViewById(R.id.character);
         if(layout == pressure) {
-            imageViewCharacter.setImageResource(R.drawable.ic_pressure);
-            textViewPressure = textViewCharacter;
+            imageViewIndicator.setImageResource(R.drawable.ic_pressure);
+            textViewPressure = textViewIndicator;
         }
         if (layout == humidity){
-            imageViewCharacter.setImageResource(R.drawable.ic_humidity);
-            textViewHumidity = textViewCharacter;
+            imageViewIndicator.setImageResource(R.drawable.ic_humidity);
+            textViewHumidity = textViewIndicator;
         }
         if(layout == wind){
-            imageViewCharacter.setImageResource(R.drawable.ic_wind);
-            textViewWind = textViewCharacter;
+            imageViewIndicator.setImageResource(R.drawable.ic_wind);
+            textViewWind = textViewIndicator;
         }
 
+    }
 
+
+    private void initForecast(){
+
+        for (int i = 0; i <5 ; i++) {
+            View daysView = inflater.inflate(R.layout.next_days, weatherDays.get(i));
+            TextView dayOfWeek = daysView.findViewById(R.id.day);
+            ImageView clouds = daysView.findViewById(R.id.cloud);
+            TextView temperature = daysView.findViewById(R.id.temperature);
+            daysList.add(new WeatherDays(dayOfWeek,clouds,temperature));
+        }
+
+        /*DateTime dt = new DateTime();
+        GregorianCalendar gregorianCalendar = dt.toGregorianCalendar();
+        dt = new DateTime(gregorianCalendar);
+        DateTime.Property day = dt.dayOfWeek();
+        String today = day.getAsShortText(Locale.US);
+        for (int i = 1; i <= 5; i++) {
+            dt = dt.plusDays(1);
+            DateTime.Property days = dt.dayOfWeek();
+            String nextDay = days.getAsShortText(Locale.US);
+            Log.d("Days", nextDay);
+
+        }*/
+
+    }
+
+    public void setDaysWeather(int i, String days, int icon, String temp){
+        daysList.get(i).getDay().setText(days);
+        daysList.get(i).getIcon().setImageResource(icon);
+        daysList.get(i).getTemp().setText(temp);
     }
 
 
@@ -127,8 +166,9 @@ public class WeatherView implements WeatherContract.View {
     @Override
     public void setWeather(Weather weather) {
         weatherDescription.setText(weather.getDescription().toString().toUpperCase());
-        temperature.setText(Double.toString(weather.getTemp()) + " °C");//Double.toString(response.getMain().getTemp()) + "C");
+        temperature.setText(Double.toString(weather.getTemp()) + " °C");//Double.toString(response.getMainForecast().getTemp()) + "C");
     }
+
 
     @Override
     public void showLoading(boolean show) {
@@ -142,5 +182,29 @@ public class WeatherView implements WeatherContract.View {
     @Override
     public void showResult(boolean show) {
         searchResult.setVisibility(show?View.VISIBLE:View.GONE);
+    }
+}
+
+class WeatherDays{
+    private TextView day;
+    private ImageView icon;
+    private TextView temp;
+
+    public WeatherDays(TextView day, ImageView icon, TextView temp) {
+        this.day = day;
+        this.icon = icon;
+        this.temp = temp;
+    }
+
+    public TextView getDay() {
+        return day;
+    }
+
+    public ImageView getIcon() {
+        return icon;
+    }
+
+    public TextView getTemp() {
+        return temp;
     }
 }

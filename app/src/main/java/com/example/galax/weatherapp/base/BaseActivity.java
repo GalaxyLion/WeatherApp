@@ -33,6 +33,8 @@ import com.squareup.otto.Bus;
 
 import com.tbruyelle.rxpermissions2.RxPermissions;
 
+import net.danlew.android.joda.JodaTimeAndroid;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
@@ -91,6 +93,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         navigationBackManager = new ScreenNavigationBackManager(this);
         //bus.register(dialogShower);
         bus.register(navigationBackManager);
+        JodaTimeAndroid.init(this);
     }
 
     @Override

@@ -15,6 +15,7 @@ public interface WeatherContract {
         void showLoading(boolean show);
         void showEmpty(boolean show);
         void showResult(boolean show);
+        void setDaysWeather(int i, String days, int icon, String temp);
     }
     interface Presenter{
         void start(View view);

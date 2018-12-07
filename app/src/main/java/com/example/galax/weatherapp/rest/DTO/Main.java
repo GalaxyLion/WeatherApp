@@ -1,4 +1,4 @@
-package com.example.galax.weatherapp.rest.DTO.fiveDaysDTO;
+package com.example.galax.weatherapp.rest.DTO;
 
 
 import com.google.gson.annotations.SerializedName;
@@ -14,9 +14,6 @@ public class Main{
 
 	@SerializedName("grnd_level")
 	private double grndLevel;
-
-	@SerializedName("temp_kf")
-	private int tempKf;
 
 	@SerializedName("humidity")
 	private int humidity;
@@ -54,14 +51,6 @@ public class Main{
 		return grndLevel;
 	}
 
-	public void setTempKf(int tempKf){
-		this.tempKf = tempKf;
-	}
-
-	public int getTempKf(){
-		return tempKf;
-	}
-
 	public void setHumidity(int humidity){
 		this.humidity = humidity;
 	}
@@ -97,11 +86,10 @@ public class Main{
 	@Override
  	public String toString(){
 		return 
-			"Main{" + 
+			"MainForecast{" +
 			"temp = '" + temp + '\'' + 
 			",temp_min = '" + tempMin + '\'' + 
 			",grnd_level = '" + grndLevel + '\'' + 
-			",temp_kf = '" + tempKf + '\'' + 
 			",humidity = '" + humidity + '\'' + 
 			",pressure = '" + pressure + '\'' + 
 			",sea_level = '" + seaLevel + '\'' + 

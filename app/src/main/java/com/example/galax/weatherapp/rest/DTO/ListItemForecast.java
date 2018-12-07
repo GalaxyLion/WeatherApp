@@ -1,34 +1,34 @@
-package com.example.galax.weatherapp.rest.DTO.fiveDaysDTO;
+package com.example.galax.weatherapp.rest.DTO;
 
 import java.util.List;
 import com.google.gson.annotations.SerializedName;
 
 
-public class ListItem{
+public class ListItemForecast {
 
 	@SerializedName("dt")
 	private int dt;
 
 	@SerializedName("rain")
-	private Rain rain;
+	private RainForecast rainForecast;
 
 	@SerializedName("dt_txt")
 	private String dtTxt;
 
 	@SerializedName("snow")
-	private Snow snow;
+	private SnowForecast snowForecast;
 
 	@SerializedName("weather")
 	private List<WeatherItem> weather;
 
 	@SerializedName("main")
-	private Main main;
+	private MainForecast mainForecast;
 
 	@SerializedName("clouds")
 	private Clouds clouds;
 
 	@SerializedName("sys")
-	private Sys sys;
+	private SysForecast sysForecast;
 
 	@SerializedName("wind")
 	private Wind wind;
@@ -41,12 +41,12 @@ public class ListItem{
 		return dt;
 	}
 
-	public void setRain(Rain rain){
-		this.rain = rain;
+	public void setRainForecast(RainForecast rainForecast){
+		this.rainForecast = rainForecast;
 	}
 
-	public Rain getRain(){
-		return rain;
+	public RainForecast getRainForecast(){
+		return rainForecast;
 	}
 
 	public void setDtTxt(String dtTxt){
@@ -57,12 +57,12 @@ public class ListItem{
 		return dtTxt;
 	}
 
-	public void setSnow(Snow snow){
-		this.snow = snow;
+	public void setSnowForecast(SnowForecast snowForecast){
+		this.snowForecast = snowForecast;
 	}
 
-	public Snow getSnow(){
-		return snow;
+	public SnowForecast getSnowForecast(){
+		return snowForecast;
 	}
 
 	public void setWeather(List<WeatherItem> weather){
@@ -73,12 +73,12 @@ public class ListItem{
 		return weather;
 	}
 
-	public void setMain(Main main){
-		this.main = main;
+	public void setMainForecast(MainForecast mainForecast){
+		this.mainForecast = mainForecast;
 	}
 
-	public Main getMain(){
-		return main;
+	public MainForecast getMainForecast(){
+		return mainForecast;
 	}
 
 	public void setClouds(Clouds clouds){
@@ -89,12 +89,12 @@ public class ListItem{
 		return clouds;
 	}
 
-	public void setSys(Sys sys){
-		this.sys = sys;
+	public void setSysForecast(SysForecast sysForecast){
+		this.sysForecast = sysForecast;
 	}
 
-	public Sys getSys(){
-		return sys;
+	public SysForecast getSysForecast(){
+		return sysForecast;
 	}
 
 	public void setWind(Wind wind){
@@ -108,15 +108,15 @@ public class ListItem{
 	@Override
  	public String toString(){
 		return 
-			"ListItem{" + 
+			"ListItemForecast{" +
 			"dt = '" + dt + '\'' + 
-			",rain = '" + rain + '\'' + 
+			",rainForecast = '" + rainForecast + '\'' +
 			",dt_txt = '" + dtTxt + '\'' + 
-			",snow = '" + snow + '\'' + 
+			",snowForecast = '" + snowForecast + '\'' +
 			",weather = '" + weather + '\'' + 
-			",main = '" + main + '\'' + 
+			",mainForecast = '" + mainForecast + '\'' +
 			",clouds = '" + clouds + '\'' + 
-			",sys = '" + sys + '\'' + 
+			",sysForecast = '" + sysForecast + '\'' +
 			",wind = '" + wind + '\'' + 
 			"}";
 		}

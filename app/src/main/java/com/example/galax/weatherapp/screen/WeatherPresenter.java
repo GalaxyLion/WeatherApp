@@ -1,11 +1,18 @@
 package com.example.galax.weatherapp.screen;
 
+import android.util.Log;
+
 import com.example.galax.weatherapp.R;
 import com.example.galax.weatherapp.data.models.Weather;
+import com.example.galax.weatherapp.data.models.WeatherForecast;
 import com.example.galax.weatherapp.data.repository.WeatherRepository;
 import com.example.galax.weatherapp.data.repository.WeatherRepositoryImpl;
 import com.example.galax.weatherapp.services.Navigator;
 
+import org.joda.time.DateTime;
+
+import java.util.GregorianCalendar;
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Observer;
@@ -67,6 +74,54 @@ public class WeatherPresenter implements WeatherContract.Presenter {
                                                     view.showResult(true);
                                                 }
                                             } else {
+                                                view.showEmpty(true);
+                                                view.showResult(false);
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onError(Throwable e) {
+                                            view.showLoading(false);
+                                        }
+
+                                        @Override
+                                        public void onComplete() {
+
+                                        }
+                                    });
+                            repository.searchForecast(query)
+                                    .subscribe(new Observer<WeatherForecast>() {
+                                        @Override
+                                        public void onSubscribe(Disposable d) {
+                                            subscriptions.add(d);
+                                        }
+
+                                        @Override
+                                        public void onNext(WeatherForecast weatherForecast) {
+                                            view.showLoading(false);
+                                            if (weatherForecast != null) {
+                                                if (weatherForecast.getDescription().isEmpty()) {
+                                                    view.showEmpty(true);
+                                                    view.showResult(false);
+                                                } else {
+                                                    view.showEmpty(false);
+
+                                                    DateTime dt = new DateTime();
+                                                    GregorianCalendar gregorianCalendar = dt.toGregorianCalendar();
+                                                    dt = new DateTime(gregorianCalendar);
+                                                    DateTime.Property day = dt.dayOfWeek();
+                                                    String today = day.getAsShortText(Locale.US);
+                                                    for (int i = 1; i <= 5; i++) {
+                                                        dt = dt.plusDays(1);
+                                                        DateTime.Property days = dt.dayOfWeek();
+                                                        String nextDay = days.getAsShortText(Locale.US);
+                                                        view.setDaysWeather(i-1,nextDay,setIconView(weatherForecast.getDescription()),Double.toString(weatherForecast.getTemp()));
+                                                        //Log.d("Days", nextDay);
+                                                    }
+
+                                                    view.showResult(true);
+                                                }
+                                            }else {
                                                 view.showEmpty(true);
                                                 view.showResult(false);
                                             }

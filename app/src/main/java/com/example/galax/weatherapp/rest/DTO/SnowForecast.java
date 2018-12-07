@@ -1,9 +1,8 @@
-package com.example.galax.weatherapp.rest.DTO.fiveDaysDTO;
+package com.example.galax.weatherapp.rest.DTO;
 
 import com.google.gson.annotations.SerializedName;
 
-
-public class Rain{
+public class SnowForecast {
 
 	@SerializedName("3h")
 	private double jsonMember3h;
@@ -19,7 +18,7 @@ public class Rain{
 	@Override
  	public String toString(){
 		return 
-			"Rain{" + 
+			"SnowForecast{" +
 			"3h = '" + jsonMember3h + '\'' + 
 			"}";
 		}

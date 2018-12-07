@@ -1,9 +1,9 @@
-package com.example.galax.weatherapp.rest.DTO.fiveDaysDTO;
+package com.example.galax.weatherapp.rest.DTO;
 
 import com.google.gson.annotations.SerializedName;
 
 
-public class City{
+public class CityForecast {
 
 	@SerializedName("country")
 	private String country;
@@ -63,7 +63,7 @@ public class City{
 	@Override
  	public String toString(){
 		return 
-			"City{" + 
+			"CityForecast{" +
 			"country = '" + country + '\'' + 
 			",coord = '" + coord + '\'' + 
 			",name = '" + name + '\'' + 
