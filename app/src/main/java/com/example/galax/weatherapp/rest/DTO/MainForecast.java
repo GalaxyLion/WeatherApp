@@ -16,7 +16,7 @@ public class MainForecast {
 	private double grndLevel;
 
 	@SerializedName("temp_kf")
-	private int tempKf;
+	private double tempKf;
 
 	@SerializedName("humidity")
 	private int humidity;
@@ -54,11 +54,11 @@ public class MainForecast {
 		return grndLevel;
 	}
 
-	public void setTempKf(int tempKf){
+	public void setTempKf(double tempKf){
 		this.tempKf = tempKf;
 	}
 
-	public int getTempKf(){
+	public double getTempKf(){
 		return tempKf;
 	}
 

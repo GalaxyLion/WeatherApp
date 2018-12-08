@@ -22,7 +22,7 @@ public class Response{
 	private int cod;
 
 	@SerializedName("main")
-	private MainForecast main;
+	private Main main;
 
 	@SerializedName("clouds")
 	private Clouds clouds;
@@ -79,11 +79,11 @@ public class Response{
 		return cod;
 	}
 
-	public void setMain(MainForecast main){
+	public void setMain(Main main){
 		this.main = main;
 	}
 
-	public MainForecast getMain(){
+	public Main getMain(){
 		return main;
 	}
 
@@ -130,7 +130,7 @@ public class Response{
 	@Override
  	public String toString(){
 		return 
-			"ResponseForecast{" +
+			"Response{" +
 			"dt = '" + dt + '\'' + 
 			",coord = '" + coord + '\'' + 
 			",weather = '" + weather + '\'' + 

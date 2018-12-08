@@ -38,7 +38,7 @@ public class WeatherRepositoryImpl implements WeatherRepository {
     }
 
     public Observable<WeatherForecast> searchForecast(String query) {
-        return restApi.searchForecast(query, "metric", "9c562b9ba5029c703df42710ce3ba3c6")
+        return restApi.searchForecast(query, "metric", "c8278b9bc99b6c1052a68f933f4e14c6")
                 .map(
                         it->{
                             WeatherForecast weatherForecast = null;

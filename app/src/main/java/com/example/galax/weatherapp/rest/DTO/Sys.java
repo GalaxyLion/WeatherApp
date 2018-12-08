@@ -53,7 +53,7 @@ public class Sys{
 	@Override
  	public String toString(){
 		return 
-			"SysForecast{" +
+			"Sys{" +
 			"country = '" + country + '\'' + 
 			",sunrise = '" + sunrise + '\'' + 
 			",sunset = '" + sunset + '\'' + 

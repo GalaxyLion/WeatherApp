@@ -86,7 +86,7 @@ public class Main{
 	@Override
  	public String toString(){
 		return 
-			"MainForecast{" +
+			"Main{" +
 			"temp = '" + temp + '\'' + 
 			",temp_min = '" + tempMin + '\'' + 
 			",grnd_level = '" + grndLevel + '\'' + 

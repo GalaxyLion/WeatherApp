@@ -3,6 +3,7 @@ package com.example.galax.weatherapp.data.repository;
 import com.example.galax.weatherapp.data.models.Weather;
 import com.example.galax.weatherapp.data.models.WeatherForecast;
 
+import io.reactivex.Flowable;
 import io.reactivex.Observable;
 
 public interface WeatherRepository {

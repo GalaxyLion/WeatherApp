@@ -113,18 +113,6 @@ public class WeatherView implements WeatherContract.View {
             daysList.add(new WeatherDays(dayOfWeek,clouds,temperature));
         }
 
-        /*DateTime dt = new DateTime();
-        GregorianCalendar gregorianCalendar = dt.toGregorianCalendar();
-        dt = new DateTime(gregorianCalendar);
-        DateTime.Property day = dt.dayOfWeek();
-        String today = day.getAsShortText(Locale.US);
-        for (int i = 1; i <= 5; i++) {
-            dt = dt.plusDays(1);
-            DateTime.Property days = dt.dayOfWeek();
-            String nextDay = days.getAsShortText(Locale.US);
-            Log.d("Days", nextDay);
-
-        }*/
 
     }
 
