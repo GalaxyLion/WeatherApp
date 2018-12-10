@@ -7,6 +7,8 @@ import com.example.galax.weatherapp.data.models.WeatherForecast;
 import com.example.galax.weatherapp.rest.RestApi;
 import com.example.galax.weatherapp.rest.RestClient;
 
+import java.util.Locale;
+
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
@@ -15,15 +17,17 @@ public class WeatherRepositoryImpl implements WeatherRepository {
     private RestApi restApi;
     private WeatherDTOMapper weatherDTOMapper;
     private WeatherForecastDTOMapper weatherForecastDTOMapper;
+    String lang;
 
     public WeatherRepositoryImpl() {
         restApi = RestClient.createApi();
         weatherDTOMapper = new WeatherDTOMapper();
         weatherForecastDTOMapper = new WeatherForecastDTOMapper();
+        lang = Locale.getDefault().getLanguage();
     }
 
     public Observable<Weather> search(String query) {
-        return restApi.search(query ,"metric","9c562b9ba5029c703df42710ce3ba3c6")
+        return restApi.search(query ,"metric",lang,"9c562b9ba5029c703df42710ce3ba3c6")
                 .map(
                         it->{
                             Weather weather = null;
@@ -38,7 +42,7 @@ public class WeatherRepositoryImpl implements WeatherRepository {
     }
 
     public Observable<WeatherForecast> searchForecast(String query) {
-        return restApi.searchForecast(query, "metric", "c8278b9bc99b6c1052a68f933f4e14c6")
+        return restApi.searchForecast(query, "metric",lang, "c8278b9bc99b6c1052a68f933f4e14c6")
                 .map(
                         it->{
                             WeatherForecast weatherForecast = null;

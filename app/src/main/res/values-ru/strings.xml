@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">WeatherApp</string>
+    <string name="back_message">Нажмите назад еще раз что-бы выйти</string>
+    <string name="unit_temperature">Единица измерения температуры</string>
+    <string name="celsius_t">Цельсий (°C)</string>
+    <string name="about">О нас</string>
+    <string name="fahrenheit_t">Фаренгейт (°F)</string>
+    <string name="input_city">Введите город</string>
+    <string name="next_5_days">Следующие 5 дней</string>
+    <string name="metr_seconds">м/с</string>
+    <string name="hectopascal">гПа</string>
+</resources>

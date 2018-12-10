@@ -1,4 +1,4 @@
-package com.example.galax.weatherapp.services;
+package com.example.galax.weatherapp.services.managers;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -7,6 +7,10 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 
 import com.example.galax.weatherapp.base.BaseActivity;
+import com.example.galax.weatherapp.services.Navigator;
+import com.example.galax.weatherapp.services.Screen;
+import com.example.galax.weatherapp.services.ScreenAnimType;
+import com.example.galax.weatherapp.services.ScreenType;
 import com.example.galax.weatherapp.services.factories.ScreenActivityFactory;
 import com.example.galax.weatherapp.services.factories.ScreenFragmentFactory;
 
@@ -60,12 +64,22 @@ public class ScreenNavigationManager implements Navigator {
             case WEATHER:
                 navigateToWeather(args);
                 break;
+            case SETTINGS:
+                navigateToSettings(args);
 
         }
     }
 
+    private void navigateToSettings(Bundle args) {
+        switchActivityScreen(Screen.SETTINGS, args, ScreenAnimType.FADE_TYPE, false);
+        activity.hideKeyboard();
+    }
+
     private void navigateToWeather(Bundle args) {
-        switchActivityScreen(Screen.WEATHER, args,ScreenAnimType.FADE_TYPE,true );
+        switchActivityScreen(Screen.WEATHER, args, ScreenAnimType.FADE_TYPE,true );
+        activity.hideKeyboard();
+        activity.finish();
+        activity.freeMemory();
     }
 
 

@@ -1,4 +1,4 @@
-package com.example.galax.weatherapp.services;
+package com.example.galax.weatherapp.services.managers;
 
 import android.os.Handler;
 import android.os.Looper;
@@ -7,9 +7,10 @@ import android.support.v4.app.FragmentManager;
 
 import com.example.galax.weatherapp.R;
 import com.example.galax.weatherapp.base.BaseActivity;
-import com.example.galax.weatherapp.services.events.BackPressEvent;
-import com.example.galax.weatherapp.services.events.TryExitActivityEvent;
-import com.example.galax.weatherapp.services.events.TryNavigateBackEvent;
+import com.example.galax.weatherapp.services.BackNavigator;
+import com.example.galax.weatherapp.services.managers.events.BackPressEvent;
+import com.example.galax.weatherapp.services.managers.events.TryExitActivityEvent;
+import com.example.galax.weatherapp.services.managers.events.TryNavigateBackEvent;
 import com.squareup.otto.Subscribe;
 
 

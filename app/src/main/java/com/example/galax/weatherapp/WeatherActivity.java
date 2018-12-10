@@ -9,10 +9,12 @@ import com.example.galax.weatherapp.screen.WeatherContract;
 import com.example.galax.weatherapp.screen.WeatherPresenter;
 import com.example.galax.weatherapp.screen.WeatherView;
 
+
 public class WeatherActivity extends BaseActivity {
 
     private WeatherContract.View view;
     private WeatherContract.Presenter presenter;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,6 +28,7 @@ public class WeatherActivity extends BaseActivity {
     protected void onStart() {
         super.onStart();
         getBus().register(presenter);
+        presenter.setNavigator(getNavigator());
         presenter.start(view);
     }
 

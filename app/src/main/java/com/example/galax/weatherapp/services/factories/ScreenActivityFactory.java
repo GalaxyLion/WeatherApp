@@ -3,6 +3,7 @@ package com.example.galax.weatherapp.services.factories;
 import android.app.Activity;
 import android.content.Intent;
 
+import com.example.galax.weatherapp.SettingsActivity;
 import com.example.galax.weatherapp.WeatherActivity;
 
 import com.example.galax.weatherapp.base.App;
@@ -19,6 +20,8 @@ public class ScreenActivityFactory {
         switch (screen){
             case WEATHER:
                 return WeatherActivity.class;
+            case SETTINGS:
+                return SettingsActivity.class;
                 default:return WeatherActivity.class;
         }
     }

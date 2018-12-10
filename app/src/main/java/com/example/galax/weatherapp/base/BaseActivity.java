@@ -1,43 +1,31 @@
 package com.example.galax.weatherapp.base;
 
-import android.Manifest;
-import android.app.Activity;
-import android.content.ClipData;
 import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.provider.MediaStore;
-import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
-import android.widget.TextView;
 
 
 import com.example.galax.weatherapp.services.BackNavigator;
 import com.example.galax.weatherapp.services.Navigator;
-import com.example.galax.weatherapp.services.ScreenNavigationBackManager;
-import com.example.galax.weatherapp.services.ScreenNavigationManager;
-import com.example.galax.weatherapp.services.events.BackPressEvent;
+import com.example.galax.weatherapp.services.managers.ScreenNavigationBackManager;
+import com.example.galax.weatherapp.services.managers.ScreenNavigationManager;
+import com.example.galax.weatherapp.services.managers.events.BackPressEvent;
 import com.squareup.otto.Bus;
 
 import com.tbruyelle.rxpermissions2.RxPermissions;
 
 import net.danlew.android.joda.JodaTimeAndroid;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.Date;
 
 import io.reactivex.disposables.CompositeDisposable;
 import timber.log.Timber;
@@ -138,7 +126,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected void onDestroy() {
         Log.i(TAG, " onDestroy()");
         //bus.unregister(dialogShower);
-        //bus.unregister(navigationBackManager);
+        bus.unregister(navigationBackManager);
         super.onDestroy();
     }
 

@@ -1,14 +1,18 @@
 package com.example.galax.weatherapp.screen;
 
 import android.annotation.SuppressLint;
+import android.content.res.Configuration;
 import android.util.Log;
 
 import com.example.galax.weatherapp.R;
+import com.example.galax.weatherapp.base.App;
 import com.example.galax.weatherapp.data.models.Weather;
 import com.example.galax.weatherapp.data.models.WeatherForecast;
 import com.example.galax.weatherapp.data.repository.WeatherRepository;
 import com.example.galax.weatherapp.data.repository.WeatherRepositoryImpl;
 import com.example.galax.weatherapp.services.Navigator;
+import com.example.galax.weatherapp.services.Screen;
+import com.example.galax.weatherapp.services.ScreenType;
 
 import org.joda.time.DateTime;
 import org.reactivestreams.Subscription;
@@ -39,6 +43,12 @@ public class WeatherPresenter implements WeatherContract.Presenter {
         this.view = view;
         subscriptions = new CompositeDisposable();
         repository = new WeatherRepositoryImpl();
+        Locale locale = new Locale(Locale.getDefault().getLanguage());
+        Configuration config = App.getInstance().getResources().getConfiguration();
+        config.locale = locale;
+        App.getInstance().getResources().updateConfiguration(config, App.getInstance().getResources().getDisplayMetrics());
+
+
         view.showEmpty(true);
         view.showResult(false);
         view.searchChanged()
@@ -85,14 +95,14 @@ public class WeatherPresenter implements WeatherContract.Presenter {
                                                             DateTime dt = new DateTime();
                                                             GregorianCalendar gregorianCalendar = dt.toGregorianCalendar();
                                                             dt = new DateTime(gregorianCalendar);
-                                                            DateTime.Property day = dt.dayOfWeek();
-                                                            String today = day.getAsShortText(Locale.US);
-                                                            for (int i = 1; i <= 5; i++) {
+                                                            for (int i = 0; i < 5; i++) {
                                                                 dt = dt.plusDays(1);
                                                                 DateTime.Property days = dt.dayOfWeek();
-                                                                String nextDay = days.getAsShortText(Locale.US);
-                                                                view.setDaysWeather(i - 1, nextDay, setIconView(weatherForecast[0].getDescription()),
-                                                                        Double.toString(weatherForecast[0].getTemp()));
+                                                                String nextDay = days.getAsShortText(Locale.getDefault());
+                                                                view.setDaysWeather(i,
+                                                                        nextDay,
+                                                                        setIconView(weatherForecast[0].getDescription().get(i)),
+                                                                        Double.toString(weatherForecast[0].getTemp().get(i)));
                                                             }
 
                                                             view.showResult(true);
@@ -131,6 +141,18 @@ public class WeatherPresenter implements WeatherContract.Presenter {
 
                 });
 
+        subscriptions.add(view.settingsBtnAction().subscribe(
+                o->{
+                    openSettings();
+                }
+        ));
+
+    }
+
+    private void openSettings(){
+        if (navigator!=null) {
+            navigator.navigateTo(Screen.SETTINGS,ScreenType.ACTIVITY);
+        }
     }
 
     private int setIconView(String description){
@@ -144,7 +166,7 @@ public class WeatherPresenter implements WeatherContract.Presenter {
             return R.drawable.ic_rain;
         }
         if(description.contains("snow")){
-            return R.drawable.ic_snow;
+            return R.drawable.ic_snowy;
         }
         if(description.contains("drizzle")){
             return R.drawable.ic_drizzle;
@@ -172,6 +194,7 @@ public class WeatherPresenter implements WeatherContract.Presenter {
         subscriptions = null;
     }
 
+    @Override
     public void setNavigator(Navigator navigator) {
         this.navigator = navigator;
     }

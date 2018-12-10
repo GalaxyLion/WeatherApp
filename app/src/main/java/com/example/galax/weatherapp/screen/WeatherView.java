@@ -1,5 +1,6 @@
 package com.example.galax.weatherapp.screen;
 
+import android.content.res.Resources;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
@@ -8,7 +9,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.galax.weatherapp.R;
+import com.example.galax.weatherapp.base.App;
 import com.example.galax.weatherapp.data.models.Weather;
+import com.jakewharton.rxbinding2.view.RxView;
 import com.jakewharton.rxbinding2.widget.RxTextView;
 
 
@@ -41,6 +44,8 @@ public class WeatherView implements WeatherContract.View {
     private TextView textViewWind;
     private List<WeatherDays> daysList;
 
+    private View settings;
+
 
 
 
@@ -72,12 +77,13 @@ public class WeatherView implements WeatherContract.View {
         weatherDays.add(root.findViewById(R.id.fifth_day));
         daysList = new ArrayList<>();
 
+        settings = root.findViewById(R.id.settings_btn);
+
 
         initIndicatorWeather(pressure);
         initIndicatorWeather(humidity);
         initIndicatorWeather(wind);
         initForecast();
-        //setForecast();
 
 
 
@@ -117,9 +123,10 @@ public class WeatherView implements WeatherContract.View {
     }
 
     public void setDaysWeather(int i, String days, int icon, String temp){
-        daysList.get(i).getDay().setText(days);
+        String s = temp + " " + App.getInstance().getString(R.string.celsius_str);
+        daysList.get(i).getDay().setText(days.toUpperCase());
         daysList.get(i).getIcon().setImageResource(icon);
-        daysList.get(i).getTemp().setText(temp);
+        daysList.get(i).getTemp().setText(s);
     }
 
 
@@ -132,18 +139,18 @@ public class WeatherView implements WeatherContract.View {
 
     @Override
     public void setPressure(String pressure){
+        String s = pressure + " " + App.getInstance().getString(R.string.hectopascal);
 
-        textViewPressure.setText(pressure + " hps");
+        textViewPressure.setText(s);
     }
     @Override
     public void setHumidity(String humidity){
-
         textViewHumidity.setText(humidity + " %");
     }
     @Override
     public void setWind(String wind){
-
-        textViewWind.setText(wind + " m/s");
+        String s = wind + " "+ App.getInstance().getString(R.string.metr_seconds);
+        textViewWind.setText(s);
     }
 
     @Override
@@ -170,6 +177,10 @@ public class WeatherView implements WeatherContract.View {
     @Override
     public void showResult(boolean show) {
         searchResult.setVisibility(show?View.VISIBLE:View.GONE);
+    }
+    @Override
+    public Observable<Object> settingsBtnAction() {
+        return RxView.clicks(settings);
     }
 }
 

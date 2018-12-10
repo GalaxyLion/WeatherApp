@@ -1,6 +1,7 @@
 package com.example.galax.weatherapp.screen;
 
 import com.example.galax.weatherapp.data.models.Weather;
+import com.example.galax.weatherapp.services.Navigator;
 
 import io.reactivex.Observable;
 
@@ -16,9 +17,11 @@ public interface WeatherContract {
         void showEmpty(boolean show);
         void showResult(boolean show);
         void setDaysWeather(int i, String days, int icon, String temp);
+        Observable <Object> settingsBtnAction();
     }
     interface Presenter{
         void start(View view);
         void stop();
+        void setNavigator(Navigator navigator);
     }
 }

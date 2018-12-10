@@ -11,7 +11,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:text="MON"
+        android:textColor="@color/colorWhite"
         />
 
     <ImageView
@@ -21,7 +21,7 @@
         app:layout_constraintTop_toBottomOf="@id/day"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:src="@drawable/ic_cloud"/>
+       />
 
     <TextView
         android:id="@+id/temperature"
@@ -30,7 +30,8 @@
         app:layout_constraintTop_toBottomOf="@id/cloud"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:text="30 °C"/>
+        android:textColor="@color/colorWhite"
+        />
 
 
 </android.support.constraint.ConstraintLayout>
