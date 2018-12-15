@@ -1,13 +1,13 @@
 package com.example.galax.weatherapp;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.widget.BaseAdapter;
 
 import com.example.galax.weatherapp.base.BaseActivity;
-import com.example.galax.weatherapp.screen.WeatherContract;
-import com.example.galax.weatherapp.screen.WeatherPresenter;
-import com.example.galax.weatherapp.screen.WeatherView;
+import com.example.galax.weatherapp.screen.weather.WeatherContract;
+import com.example.galax.weatherapp.screen.weather.WeatherPresenter;
+import com.example.galax.weatherapp.screen.weather.WeatherView;
+
+import timber.log.Timber;
 
 
 public class WeatherActivity extends BaseActivity {
@@ -30,6 +30,7 @@ public class WeatherActivity extends BaseActivity {
         getBus().register(presenter);
         presenter.setNavigator(getNavigator());
         presenter.start(view);
+
     }
 
     @Override
@@ -37,5 +38,6 @@ public class WeatherActivity extends BaseActivity {
         super.onStop();
         presenter.stop();
         getBus().unregister(presenter);
+
     }
 }

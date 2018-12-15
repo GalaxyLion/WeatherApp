@@ -1,6 +1,6 @@
-package com.example.galax.weatherapp.screen;
+package com.example.galax.weatherapp.screen.weather;
 
-import com.example.galax.weatherapp.data.models.Weather;
+
 import com.example.galax.weatherapp.services.Navigator;
 
 import io.reactivex.Observable;
@@ -11,7 +11,8 @@ public interface WeatherContract {
         void setPressure(String pressure);
         void setHumidity(String humidity);
         void setWind(String wind);
-        void setWeather(Weather weather);
+        void setDescription(String description);
+        void setTemperature(String temperature);
         void setWeatherIcon(int icon);
         void showLoading(boolean show);
         void showEmpty(boolean show);

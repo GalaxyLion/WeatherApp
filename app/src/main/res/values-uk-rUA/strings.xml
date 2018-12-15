@@ -3,12 +3,11 @@
     <string name="app_name">WeatherApp</string>
     <string name="back_message">Натисніть назад ще раз щоб вийти</string>
     <string name="unit_temperature">Одиниця виміру температури</string>
-    <string name="celsius_t">Цельсій (°C)</string>
+    <string name="celsius_str">Цельсій</string>
     <string name="about">Про нас</string>
-    <string name="fahrenheit_t">Фаренгейт (°F)</string>
     <string name="input_city">Введіть місто</string>
     <string name="next_5_days">Наступні 5 днів</string>
     <string name="metr_seconds">м/с</string>
     <string name="hectopascal">гПа</string>
-    <string name="celsius_str">°C</string>
+    <string name="fahrenheit_str">Фаренгейт</string>
 </resources>

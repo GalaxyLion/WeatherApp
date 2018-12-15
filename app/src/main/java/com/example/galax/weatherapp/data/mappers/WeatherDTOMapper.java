@@ -12,7 +12,8 @@ public class WeatherDTOMapper implements Mapper<Response, Weather> {
                 data.getMain().getPressure(),
                 data.getSys().getCountry(),
                 data.getWeather().get(0).getDescription(),
-                data.getWind().getSpeed()
+                data.getWind().getSpeed(),
+                data.getWeather().get(0).getId()
         );
     }
 

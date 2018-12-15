@@ -1,6 +1,5 @@
-package com.example.galax.weatherapp.screen;
+package com.example.galax.weatherapp.screen.weather;
 
-import android.content.res.Resources;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
@@ -11,6 +10,7 @@ import android.widget.TextView;
 import com.example.galax.weatherapp.R;
 import com.example.galax.weatherapp.base.App;
 import com.example.galax.weatherapp.data.models.Weather;
+import com.example.galax.weatherapp.data.models.WeatherDays;
 import com.jakewharton.rxbinding2.view.RxView;
 import com.jakewharton.rxbinding2.widget.RxTextView;
 
@@ -26,7 +26,7 @@ public class WeatherView implements WeatherContract.View {
     private EditText searchCity;
     private ImageView weatherIcon;
     private TextView weatherDescription;
-    private TextView temperature;
+    private TextView temperatureText;
     private View empty;
     private View progress;
     private View searchResult;
@@ -60,7 +60,7 @@ public class WeatherView implements WeatherContract.View {
         searchCity = root.findViewById(R.id.search);
         weatherIcon = root.findViewById(R.id.image_weather);
         weatherDescription = root.findViewById(R.id.weather_description);
-        temperature = root.findViewById(R.id.temperature);
+        temperatureText = root.findViewById(R.id.temperature);
         empty = root.findViewById(R.id.empty);
         progress = root.findViewById(R.id.progress);
         searchResult = root.findViewById(R.id.search_result);
@@ -123,10 +123,9 @@ public class WeatherView implements WeatherContract.View {
     }
 
     public void setDaysWeather(int i, String days, int icon, String temp){
-        String s = temp + " " + App.getInstance().getString(R.string.celsius_str);
         daysList.get(i).getDay().setText(days.toUpperCase());
         daysList.get(i).getIcon().setImageResource(icon);
-        daysList.get(i).getTemp().setText(s);
+        daysList.get(i).getTemp().setText(temp);
     }
 
 
@@ -159,11 +158,14 @@ public class WeatherView implements WeatherContract.View {
     }
 
     @Override
-    public void setWeather(Weather weather) {
-        weatherDescription.setText(weather.getDescription().toString().toUpperCase());
-        temperature.setText(Double.toString(weather.getTemp()) + " °C");//Double.toString(response.getMainForecast().getTemp()) + "C");
+    public void setDescription(String description) {
+        weatherDescription.setText(description.toUpperCase());
     }
 
+    @Override
+    public void setTemperature(String temperature) {
+        temperatureText.setText(temperature);
+    }
 
     @Override
     public void showLoading(boolean show) {
@@ -184,26 +186,4 @@ public class WeatherView implements WeatherContract.View {
     }
 }
 
-class WeatherDays{
-    private TextView day;
-    private ImageView icon;
-    private TextView temp;
 
-    public WeatherDays(TextView day, ImageView icon, TextView temp) {
-        this.day = day;
-        this.icon = icon;
-        this.temp = temp;
-    }
-
-    public TextView getDay() {
-        return day;
-    }
-
-    public ImageView getIcon() {
-        return icon;
-    }
-
-    public TextView getTemp() {
-        return temp;
-    }
-}

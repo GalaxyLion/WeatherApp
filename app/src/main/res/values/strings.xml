@@ -3,12 +3,13 @@
     <string name="app_name">WeatherApp</string>
     <string name="back_message">Please click BACK again to exit</string>
     <string name="unit_temperature">Unit Temperature</string>
-    <string name="celsius_t">Celsius (°C)</string>
+    <string name="celsius_str">"Celsius"</string>
     <string name="about">About</string>
-    <string name="fahrenheit_t">Fahrenheit (°F)</string>
+    <string name="fahrenheit_str">Fahrenheit</string>
     <string name="input_city">Input city</string>
     <string name="next_5_days">Next 5 Days</string>
-    <string name="celsius_str" translatable="false">°C</string>
+    <string name="celsius" translatable="false">°C</string>
     <string name="metr_seconds">m/s</string>
     <string name="hectopascal">hPa</string>
+    <string name="fahrenheit" translatable="false">°F</string>
 </resources>

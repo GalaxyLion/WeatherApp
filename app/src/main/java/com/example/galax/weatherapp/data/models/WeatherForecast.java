@@ -12,11 +12,11 @@ import java.util.Locale;
 
 public class WeatherForecast {
     private List<Double> temp;
-    private List<String> description;
+    private List<Integer> conditionId;
 
-    public WeatherForecast(List<Double> temp, List<String> description) {
+    public WeatherForecast(List<Double> temp, List<Integer> conditionId) {
         this.temp = temp;
-        this.description = description;
+        this.conditionId = conditionId;
     }
 
     public List<Double> getTemp() {
@@ -27,13 +27,14 @@ public class WeatherForecast {
         this.temp = temp;
     }
 
-    public List<String> getDescription() {
-        return description;
+    public List<Integer> getConditionId() {
+        return conditionId;
     }
 
-    public void setDescription(List<String> description) {
-        this.description = description;
+    public void setConditionId(List<Integer> conditionId) {
+        this.conditionId = conditionId;
     }
+
 
     public void transformTempAndDescription(List<ListItemForecast> itemForecastList){
         if(itemForecastList!=null && !itemForecastList.isEmpty()){
@@ -49,12 +50,12 @@ public class WeatherForecast {
                 if(Integer.parseInt(dayOfMonthForecast) == dt.getDayOfMonth()){
                     dt = dt.plusDays(1);
                     temp.add(itemForecastList.get(forecastItem).getMainForecast().getTemp());
-                    description.add(itemForecastList.get(forecastItem).getWeather().get(0).getDescription());
+                    conditionId.add(itemForecastList.get(forecastItem).getWeather().get(0).getId());
                 }
 
-                if(temp.size()<5 && description.size()<5 && forecastItem==itemForecastList.size()-1){
+                if(temp.size()<5 && conditionId.size()<5 && forecastItem==itemForecastList.size()-1){
                     temp.add(itemForecastList.get(forecastItem).getMainForecast().getTemp());
-                    description.add(itemForecastList.get(forecastItem).getWeather().get(0).getDescription());
+                    conditionId.add(itemForecastList.get(forecastItem).getWeather().get(0).getId());
                 }
 
 

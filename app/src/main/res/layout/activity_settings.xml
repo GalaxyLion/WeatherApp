@@ -36,7 +36,16 @@
             android:layout_marginStart="20dp"
             android:textSize="12sp"
             android:id="@+id/sub_title"
-            android:text="@string/celsius_t"/>
+            />
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/title"
+            app:layout_constraintStart_toEndOf="@id/sub_title"
+            android:layout_marginStart="2dp"
+            android:textSize="12sp"
+            android:id="@+id/unit_text"
+           />
 
         <View
             android:id="@+id/line"

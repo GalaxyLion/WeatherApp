@@ -1,8 +1,4 @@
-package com.example.galax.weatherapp.screen;
-
-import android.annotation.SuppressLint;
-import android.content.res.Configuration;
-import android.util.Log;
+package com.example.galax.weatherapp.screen.weather;
 
 import com.example.galax.weatherapp.R;
 import com.example.galax.weatherapp.base.App;
@@ -15,14 +11,12 @@ import com.example.galax.weatherapp.services.Screen;
 import com.example.galax.weatherapp.services.ScreenType;
 
 import org.joda.time.DateTime;
-import org.reactivestreams.Subscription;
 
 import java.util.GregorianCalendar;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
-import java.util.function.BiFunction;
 
-import io.reactivex.FlowableSubscriber;
+import io.paperdb.Paper;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -36,6 +30,7 @@ public class WeatherPresenter implements WeatherContract.Presenter {
     private WeatherRepository repository;
     private CompositeDisposable subscriptions;
     private Navigator navigator;
+    private String units;
 
 
     @Override
@@ -43,11 +38,9 @@ public class WeatherPresenter implements WeatherContract.Presenter {
         this.view = view;
         subscriptions = new CompositeDisposable();
         repository = new WeatherRepositoryImpl();
-        Locale locale = new Locale(Locale.getDefault().getLanguage());
-        Configuration config = App.getInstance().getResources().getConfiguration();
-        config.locale = locale;
-        App.getInstance().getResources().updateConfiguration(config, App.getInstance().getResources().getDisplayMetrics());
-
+        if(Paper.book().read("UNIT_TEMP") == null) {
+            Paper.book().write("UNIT_TEMP", App.getInstance().getString(R.string.celsius));
+        }else units = Paper.book().read("UNIT_TEMP");
 
         view.showEmpty(true);
         view.showResult(false);
@@ -89,8 +82,11 @@ public class WeatherPresenter implements WeatherContract.Presenter {
                                                             view.setPressure(Double.toString(weather[0].getPressure()));
                                                             view.setHumidity(Integer.toString(weather[0].getHumidity()));
                                                             view.setWind(Double.toString(weather[0].getWindSpeed()));
-                                                            view.setWeatherIcon(setIconView(weather[0].getDescription()));
-                                                            view.setWeather(weather[0]);
+                                                            view.setWeatherIcon(setIconView(weather[0].getConditionId()));
+                                                            view.setTemperature(Double.toString(weather[0].getTemp()) + " " + units);
+
+                                                            view.setDescription(weather[0].getDescription());
+
 
                                                             DateTime dt = new DateTime();
                                                             GregorianCalendar gregorianCalendar = dt.toGregorianCalendar();
@@ -101,8 +97,8 @@ public class WeatherPresenter implements WeatherContract.Presenter {
                                                                 String nextDay = days.getAsShortText(Locale.getDefault());
                                                                 view.setDaysWeather(i,
                                                                         nextDay,
-                                                                        setIconView(weatherForecast[0].getDescription().get(i)),
-                                                                        Double.toString(weatherForecast[0].getTemp().get(i)));
+                                                                        setIconView(weatherForecast[0].getConditionId().get(i)),
+                                                                        Double.toString(weatherForecast[0].getTemp().get(i))+ " " + units);
                                                             }
 
                                                             view.showResult(true);
@@ -155,36 +151,40 @@ public class WeatherPresenter implements WeatherContract.Presenter {
         }
     }
 
-    private int setIconView(String description){
-        if (description.contains("thunderstorm") && description.contains("rain")){
+    private int setIconView(int conditionId){
+
+        if (conditionId>=200 && conditionId<210){
             return R.drawable.ic_thunderstorm_with_rain;
         }
-        if(description.contains("thunderstorm")){
+        if(conditionId>=210 && conditionId<300){
             return R.drawable.ic_thunderstorm;
         }
-        if(description.contains("rain")){
+        if(conditionId>=500 && conditionId<600){
             return R.drawable.ic_rain;
         }
-        if(description.contains("snow")){
+        if(conditionId>=600 && conditionId<700){
             return R.drawable.ic_snowy;
         }
-        if(description.contains("drizzle")){
+        if(conditionId>=300 && conditionId<500){
             return R.drawable.ic_drizzle;
         }
-        if(description.contains("clear")){
+        if(conditionId>=701 && conditionId<800){
+            return R.drawable.ic_fog;
+        }
+        if(conditionId==800){
             return R.drawable.ic_clear;
         }
-        if(description.equals("few clouds")){
+        if(conditionId==801){
             return R.drawable.ic_few_clouds;
         }
-        if(description.equals("scattered clouds")){
+        if(conditionId==802){
             return R.drawable.ic_cloud;
         }
-        if(description.equals("broken clouds") || description.equals("overcast clouds")){
+        if(conditionId>=803){
             return R.drawable.ic_clouds;
         }
 
-        return  R.drawable.ic_cloud;
+        return  R.drawable.ic_error;
     }
 
     @Override

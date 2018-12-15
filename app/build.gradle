@@ -43,4 +43,5 @@ dependencies {
     implementation 'com.jakewharton.timber:timber:4.6.0'
     implementation 'com.android.support:design:27.1.1'
     implementation 'net.danlew:android.joda:2.10.1'
+    implementation 'io.paperdb:paperdb:2.6'
 }
