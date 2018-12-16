@@ -128,7 +128,10 @@ public class WeatherView implements WeatherContract.View {
         daysList.get(i).getTemp().setText(temp);
     }
 
-
+    @Override
+    public void showCitySearch(String city) {
+        searchCity.setText(city);
+    }
 
     @Override
     public Observable<CharSequence> searchChanged() {

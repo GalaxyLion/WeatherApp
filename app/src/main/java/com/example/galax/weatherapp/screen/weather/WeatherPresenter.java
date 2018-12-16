@@ -9,6 +9,7 @@ import com.example.galax.weatherapp.data.repository.WeatherRepositoryImpl;
 import com.example.galax.weatherapp.services.Navigator;
 import com.example.galax.weatherapp.services.Screen;
 import com.example.galax.weatherapp.services.ScreenType;
+import com.example.galax.weatherapp.utils.Constants;
 
 import org.joda.time.DateTime;
 
@@ -38,104 +39,41 @@ public class WeatherPresenter implements WeatherContract.Presenter {
         this.view = view;
         subscriptions = new CompositeDisposable();
         repository = new WeatherRepositoryImpl();
-        if(Paper.book().read("UNIT_TEMP") == null) {
-            Paper.book().write("UNIT_TEMP", App.getInstance().getString(R.string.celsius));
-        }else units = Paper.book().read("UNIT_TEMP");
+        if(Paper.book().read(Constants.UNIT_TEMP) == null) {
+            Paper.book().write(Constants.UNIT_TEMP, App.getInstance().getString(R.string.celsius));
+        }else units = Paper.book().read(Constants.UNIT_TEMP);
+
+        if(Paper.book().read(Constants.CITY)!=null) {
+            createWeatherView(Paper.book().read(Constants.CITY));
+            view.showCitySearch(Paper.book().read(Constants.CITY));
+        }
+
+
 
         view.showEmpty(true);
         view.showResult(false);
-        view.searchChanged()
+        subscriptions.add(view.searchChanged()
                 .debounce(1000, TimeUnit.MILLISECONDS)
                 .skip(1)
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<CharSequence>() {
-                    @Override
-                    public void onSubscribe(Disposable d) {
-                        subscriptions.add(d);
-                    }
-
-
-                    @Override
-                    public void onNext(CharSequence charSequence) {
+                .subscribe(charSequence ->  {
                         String query = charSequence.toString().trim();
-                        final Weather[] weather = new Weather[1];
-                        final WeatherForecast[] weatherForecast = new WeatherForecast[1];
-                        if (!query.isEmpty()) {
-                            view.showLoading(true);
-                            Disposable d = Observable.combineLatest(repository.search(query), repository.searchForecast(query),
-                                    (io.reactivex.functions.BiFunction<Weather, WeatherForecast, Boolean>) (w, wf) -> {
-                                weather[0] = w;
-                                weatherForecast[0] = wf;
-                                return w!=null && wf!=null;
-                            }).subscribeOn(Schedulers.newThread())
-                                    .observeOn(AndroidSchedulers.mainThread()).
-                                    subscribe(
-                                            result -> {
-                                                if(result) {
-                                                    view.showLoading(false);
-                                                    if (weather[0] != null && weatherForecast[0] != null) {
-                                                        if (weather[0].getCountry().isEmpty()) {
-                                                            view.showEmpty(true);
-                                                            view.showResult(false);
-                                                        } else {
-                                                            view.showEmpty(false);
-                                                            view.setPressure(Double.toString(weather[0].getPressure()));
-                                                            view.setHumidity(Integer.toString(weather[0].getHumidity()));
-                                                            view.setWind(Double.toString(weather[0].getWindSpeed()));
-                                                            view.setWeatherIcon(setIconView(weather[0].getConditionId()));
-                                                            view.setTemperature(Double.toString(weather[0].getTemp()) + " " + units);
-
-                                                            view.setDescription(weather[0].getDescription());
-
-
-                                                            DateTime dt = new DateTime();
-                                                            GregorianCalendar gregorianCalendar = dt.toGregorianCalendar();
-                                                            dt = new DateTime(gregorianCalendar);
-                                                            for (int i = 0; i < 5; i++) {
-                                                                dt = dt.plusDays(1);
-                                                                DateTime.Property days = dt.dayOfWeek();
-                                                                String nextDay = days.getAsShortText(Locale.getDefault());
-                                                                view.setDaysWeather(i,
-                                                                        nextDay,
-                                                                        setIconView(weatherForecast[0].getConditionId().get(i)),
-                                                                        Double.toString(weatherForecast[0].getTemp().get(i))+ " " + units);
-                                                            }
-
-                                                            view.showResult(true);
-                                                        }
-                                                    } else {
-                                                        view.showEmpty(true);
-                                                        view.showResult(false);
-                                                    }
-                                                }else{
-                                                    view.showEmpty(true);
-                                                    view.showResult(false);
-                                                }
-
-                                            },
-                                            e->{
-                                                view.showLoading(false);
-                                            }
-                                    );
-                            subscriptions.add(d);
-
-                        }else{
-                            view.showEmpty(true);
-                            view.showResult(false);
+                        if(Paper.book().read(Constants.CITY)==null || !Paper.book().read(Constants.CITY).equals(query)){
+                            if(Paper.book().read(Constants.CITY)==null){
+                                Paper.book().write(Constants.CITY,query);
+                            }else {
+                                Paper.book().delete(Constants.CITY);
+                                Paper.book().write(Constants.CITY,query);
+                            }
                         }
-                    }
 
-                    @Override
-                    public void onError(Throwable e) {
+                    createWeatherView(Paper.book().read(Constants.CITY));
+
+                    },e->{
                             view.showLoading(false);
                     }
 
-                    @Override
-                    public void onComplete() {
-
-                    }
-
-                });
+                ));
 
         subscriptions.add(view.settingsBtnAction().subscribe(
                 o->{
@@ -143,6 +81,74 @@ public class WeatherPresenter implements WeatherContract.Presenter {
                 }
         ));
 
+    }
+
+    private void createWeatherView(String query) {
+        final Weather[] weather = new Weather[1];
+        final WeatherForecast[] weatherForecast = new WeatherForecast[1];
+        if (!query.isEmpty()) {
+            view.showLoading(true);
+            Disposable d = Observable.combineLatest(repository.search(query), repository.searchForecast(query),
+                    (io.reactivex.functions.BiFunction<Weather, WeatherForecast, Boolean>) (w, wf) -> {
+                        weather[0] = w;
+                        weatherForecast[0] = wf;
+                        return w!=null && wf!=null;
+                    }).subscribeOn(Schedulers.newThread())
+                    .observeOn(AndroidSchedulers.mainThread()).
+                            subscribe(
+                                    result -> {
+                                        if(result) {
+                                            view.showLoading(false);
+                                            if (weather[0] != null && weatherForecast[0] != null) {
+                                                if (weather[0].getCountry().isEmpty()) {
+                                                    view.showEmpty(true);
+                                                    view.showResult(false);
+                                                } else {
+                                                    view.showEmpty(false);
+                                                    view.setPressure(Double.toString(weather[0].getPressure()));
+                                                    view.setHumidity(Integer.toString(weather[0].getHumidity()));
+                                                    view.setWind(Double.toString(weather[0].getWindSpeed()));
+                                                    view.setWeatherIcon(setIconView(weather[0].getConditionId()));
+                                                    view.setTemperature(Double.toString(weather[0].getTemp()) + " " + units);
+
+                                                    view.setDescription(weather[0].getDescription());
+
+
+                                                    DateTime dt = new DateTime();
+                                                    GregorianCalendar gregorianCalendar = dt.toGregorianCalendar();
+                                                    dt = new DateTime(gregorianCalendar);
+                                                    for (int i = 0; i < 5; i++) {
+                                                        dt = dt.plusDays(1);
+                                                        DateTime.Property days = dt.dayOfWeek();
+                                                        String nextDay = days.getAsShortText(Locale.getDefault());
+                                                        view.setDaysWeather(i,
+                                                                nextDay,
+                                                                setIconView(weatherForecast[0].getConditionId().get(i)),
+                                                                Double.toString(weatherForecast[0].getTemp().get(i))+ " " + units);
+                                                    }
+
+                                                    view.showResult(true);
+                                                }
+                                            } else {
+                                                view.showEmpty(true);
+                                                view.showResult(false);
+                                            }
+                                        }else{
+                                            view.showEmpty(true);
+                                            view.showResult(false);
+                                        }
+
+                                    },
+                                    e->{
+                                        view.showLoading(false);
+                                    }
+                            );
+            subscriptions.add(d);
+
+        }else{
+            view.showEmpty(true);
+            view.showResult(false);
+        }
     }
 
     private void openSettings(){

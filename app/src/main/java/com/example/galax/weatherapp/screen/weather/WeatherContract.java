@@ -17,6 +17,7 @@ public interface WeatherContract {
         void showLoading(boolean show);
         void showEmpty(boolean show);
         void showResult(boolean show);
+        void showCitySearch(String city);
         void setDaysWeather(int i, String days, int icon, String temp);
         Observable <Object> settingsBtnAction();
     }

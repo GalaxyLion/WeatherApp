@@ -3,13 +3,14 @@ package com.example.galax.weatherapp;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
+import com.example.galax.weatherapp.base.BaseActivity;
 import com.example.galax.weatherapp.screen.settings.SettingsContract;
 import com.example.galax.weatherapp.screen.settings.SettingsPresenter;
 import com.example.galax.weatherapp.screen.settings.SettingsView;
 
 import timber.log.Timber;
 
-public class SettingsActivity extends AppCompatActivity {
+public class SettingsActivity extends BaseActivity {
 
     private SettingsContract.SettingsView view;
     private SettingsContract.SettingsPresenter presenter;
@@ -20,7 +21,7 @@ public class SettingsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
         view = new SettingsView(findViewById(R.id.content_frame));
-        presenter = new SettingsPresenter();
+        presenter = new SettingsPresenter(this);
     }
 
     @Override

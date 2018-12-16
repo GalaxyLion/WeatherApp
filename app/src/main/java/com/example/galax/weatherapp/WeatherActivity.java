@@ -27,7 +27,6 @@ public class WeatherActivity extends BaseActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        getBus().register(presenter);
         presenter.setNavigator(getNavigator());
         presenter.start(view);
 
@@ -37,7 +36,5 @@ public class WeatherActivity extends BaseActivity {
     protected void onStop() {
         super.onStop();
         presenter.stop();
-        getBus().unregister(presenter);
-
     }
 }

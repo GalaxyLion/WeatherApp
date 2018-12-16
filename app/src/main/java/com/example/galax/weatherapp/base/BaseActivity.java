@@ -12,10 +12,17 @@ import android.os.Looper;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.TextView;
 
 
+import com.example.galax.weatherapp.R;
+import com.example.galax.weatherapp.base.dialogs.DialogShower;
+import com.example.galax.weatherapp.base.dialogs.events.DialogWasDissmisedEvent;
+import com.example.galax.weatherapp.base.dialogs.events.HideDialogEvent;
+import com.example.galax.weatherapp.base.dialogs.events.ShowDialogEvent;
 import com.example.galax.weatherapp.services.BackNavigator;
 import com.example.galax.weatherapp.services.Navigator;
 import com.example.galax.weatherapp.services.managers.ScreenNavigationBackManager;
@@ -35,7 +42,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected final String TAG = getClass().getSimpleName();
     private Bus bus;
     private CompositeDisposable subscriptions;
-    //private DialogShower dialogShower;
+    private DialogShower dialogShower;
     private CompositeDisposable imageSubs;
     private Handler handler;
     static final int REQUEST_TAKE_PHOTO = 92;
@@ -76,10 +83,10 @@ public abstract class BaseActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         handler = new Handler(Looper.getMainLooper());
         bus = new Bus();
-        //dialogShower = new DialogShower(this);
+        dialogShower = new DialogShower(this);
         navigator = new ScreenNavigationManager(this);
         navigationBackManager = new ScreenNavigationBackManager(this);
-        //bus.register(dialogShower);
+        bus.register(dialogShower);
         bus.register(navigationBackManager);
         JodaTimeAndroid.init(this);
     }
@@ -89,7 +96,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         bus.post(new BackPressEvent());
     }
 
-   /* public void showInfoDialog(String message){
+    public void showInfoDialog(String message){
         View view = getLayoutInflater().inflate(R.layout.info_dialog, null);
         TextView messageLabel = view.findViewById(R.id.message);
         View okBtn = view.findViewById(R.id.ok);
@@ -97,7 +104,6 @@ public abstract class BaseActivity extends AppCompatActivity {
         okBtn.setOnClickListener(v -> getBus().post(new HideDialogEvent()));
         bus.post(new ShowDialogEvent(view));
     }
-*/
 
 
 
@@ -213,7 +219,7 @@ public abstract class BaseActivity extends AppCompatActivity {
 
             checkInternetWithDelay(INTERVAL_SHOWING_NO_NETWORK_DIALOG);
         }*/
-        //getBus().post(new DialogWasDissmisedEvent());
+        getBus().post(new DialogWasDissmisedEvent());
     }
 
     public Navigator getNavigator() {
