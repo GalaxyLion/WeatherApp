@@ -99,7 +99,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     public void showInfoDialog(String message){
         View view = getLayoutInflater().inflate(R.layout.info_dialog, null);
         TextView messageLabel = view.findViewById(R.id.message);
-        View okBtn = view.findViewById(R.id.ok);
+        View okBtn = view.findViewById(R.id.add_city_btn);
         messageLabel.setText(message);
         okBtn.setOnClickListener(v -> getBus().post(new HideDialogEvent()));
         bus.post(new ShowDialogEvent(view));

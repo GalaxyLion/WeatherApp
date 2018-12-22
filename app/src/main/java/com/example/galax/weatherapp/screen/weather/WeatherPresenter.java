@@ -41,6 +41,7 @@ public class WeatherPresenter implements WeatherContract.Presenter {
         repository = new WeatherRepositoryImpl();
         if(Paper.book().read(Constants.UNIT_TEMP) == null) {
             Paper.book().write(Constants.UNIT_TEMP, App.getInstance().getString(R.string.celsius));
+            units = Paper.book().read(Constants.UNIT_TEMP);
         }else units = Paper.book().read(Constants.UNIT_TEMP);
 
         if(Paper.book().read(Constants.CITY)!=null) {
@@ -77,6 +78,7 @@ public class WeatherPresenter implements WeatherContract.Presenter {
 
         subscriptions.add(view.settingsBtnAction().subscribe(
                 o->{
+
                     openSettings();
                 }
         ));

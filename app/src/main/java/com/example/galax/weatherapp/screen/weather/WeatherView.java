@@ -44,6 +44,7 @@ public class WeatherView implements WeatherContract.View {
     private TextView textViewWind;
     private List<WeatherDays> daysList;
 
+
     private View settings;
 
 

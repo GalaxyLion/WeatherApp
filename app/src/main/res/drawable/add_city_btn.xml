@@ -3,22 +3,19 @@
     <item android:state_pressed="true">
         <shape android:shape="rectangle"
             xmlns:android="http://schemas.android.com/apk/res/android">
-            <corners android:radius="16dp"/>
-            <solid android:color="@color/colorPrimaryDark"/>
+            <solid android:color="@color/colorDarkSlateGray"/>
         </shape>
     </item>
     <item android:state_enabled="false">
         <shape android:shape="rectangle"
             xmlns:android="http://schemas.android.com/apk/res/android">
-            <corners android:radius="16dp"/>
-            <solid android:color="@color/colorWhiteGray"/>
+            <solid android:color="@color/colorGray"/>
         </shape>
     </item>
     <item>
         <shape android:shape="rectangle"
             xmlns:android="http://schemas.android.com/apk/res/android">
-        <solid android:color="@color/colorAccent"/>
-        <corners android:radius="16dp"/>
-    </shape>
+            <solid android:color="@color/colorGray"/>
+        </shape>
     </item>
 </selector>
