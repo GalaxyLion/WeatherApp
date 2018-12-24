@@ -10,5 +10,8 @@
     <string name="metr_seconds">м/с</string>
     <string name="hectopascal">гПа</string>
     <string name="fahrenheit_str">Фаренгейт</string>
-    <string name="add_location">Добавить город</string>
+    <string name="add_location">ДОБАВИТЬ ЛОКАЦИЮ</string>
+    <string name="add_new_location">ДОБАВИТЬ НОВУЮ ЛОКАЦИЮ</string>
+    <string name="add">ДОБАВИТЬ</string>
+    <string name="cancel">ЗАКРЫТЬ</string>
 </resources>

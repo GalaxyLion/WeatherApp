@@ -7,4 +7,6 @@
     <color name="colorWhiteGray">#E0E0E0</color>
     <color name="colorDarkSlateGray">#4b4b4d</color>
     <color name="colorGray">#808080</color>
+    <color name="colorBlackTransparent">#B3000000</color>
+    <color name="colorBlue">#2196F3</color>
 </resources>

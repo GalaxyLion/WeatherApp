@@ -12,5 +12,8 @@
     <string name="metr_seconds">m/s</string>
     <string name="hectopascal">hPa</string>
     <string name="fahrenheit" translatable="false">°F</string>
-    <string name="add_location">Add Location</string>
+    <string name="add_location">ADD LOCATION</string>
+    <string name="add_new_location">ADD NEW LOCATION</string>
+    <string name="add">ADD</string>
+    <string name="cancel">CANCEL</string>
 </resources>
