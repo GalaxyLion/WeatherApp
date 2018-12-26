@@ -20,6 +20,9 @@ public interface WeatherContract {
         void showCitySearch(String city);
         void setDaysWeather(int i, String days, int icon, String temp);
         Observable <Object> settingsBtnAction();
+        Observable <Object> menuBtnAction();
+        Observable <Object> addLocationBtnAction();
+        void openDrawer();
     }
     interface Presenter{
         void start(View view);

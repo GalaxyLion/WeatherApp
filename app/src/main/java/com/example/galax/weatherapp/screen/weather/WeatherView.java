@@ -1,5 +1,7 @@
 package com.example.galax.weatherapp.screen.weather;
 
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
@@ -9,7 +11,8 @@ import android.widget.TextView;
 
 import com.example.galax.weatherapp.R;
 import com.example.galax.weatherapp.base.App;
-import com.example.galax.weatherapp.data.models.Weather;
+import com.example.galax.weatherapp.base.dialogs.events.HideDialogEvent;
+import com.example.galax.weatherapp.base.dialogs.events.ShowDialogEvent;
 import com.example.galax.weatherapp.data.models.WeatherDays;
 import com.jakewharton.rxbinding2.view.RxView;
 import com.jakewharton.rxbinding2.widget.RxTextView;
@@ -43,15 +46,20 @@ public class WeatherView implements WeatherContract.View {
     private TextView textViewHumidity;
     private TextView textViewWind;
     private List<WeatherDays> daysList;
+    private DrawerLayout mDrawerLayout;
 
 
-    private View settings;
+    private View settingsBtn;
+    private View menuBtn;
+    private View addLocationBtn;
+    private DrawerLayout drawer;
 
 
 
 
-    public WeatherView(View root) {
+    public WeatherView(View root, DrawerLayout drawer) {
         this.root = root;
+        this.drawer = drawer;
         initView();
     }
 
@@ -78,7 +86,9 @@ public class WeatherView implements WeatherContract.View {
         weatherDays.add(root.findViewById(R.id.fifth_day));
         daysList = new ArrayList<>();
 
-        settings = root.findViewById(R.id.settings_btn);
+        settingsBtn = root.findViewById(R.id.settings_btn);
+        menuBtn = root.findViewById(R.id.menu_btn);
+        addLocationBtn = drawer.findViewById(R.id.add_location_btn);
 
 
         initIndicatorWeather(pressure);
@@ -123,6 +133,10 @@ public class WeatherView implements WeatherContract.View {
 
     }
 
+
+
+
+    @Override
     public void setDaysWeather(int i, String days, int icon, String temp){
         daysList.get(i).getDay().setText(days.toUpperCase());
         daysList.get(i).getIcon().setImageResource(icon);
@@ -186,7 +200,22 @@ public class WeatherView implements WeatherContract.View {
     }
     @Override
     public Observable<Object> settingsBtnAction() {
-        return RxView.clicks(settings);
+        return RxView.clicks(settingsBtn);
+    }
+
+    @Override
+    public Observable<Object> menuBtnAction() {
+        return RxView.clicks(menuBtn);
+    }
+
+    @Override
+    public Observable<Object> addLocationBtnAction() {
+        return RxView.clicks(addLocationBtn);
+    }
+
+    @Override
+    public void openDrawer() {
+        drawer.openDrawer(GravityCompat.START);
     }
 }
 

@@ -250,10 +250,10 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scrollbars="vertical"
-            app:layout_constraintBottom_toTopOf="@+id/add_city_btn" />
+            app:layout_constraintBottom_toTopOf="@+id/add_location_btn" />
 
         <FrameLayout
-            android:id="@+id/add_city_btn"
+            android:id="@+id/add_location_btn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"

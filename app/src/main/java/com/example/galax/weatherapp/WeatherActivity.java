@@ -20,8 +20,8 @@ public class WeatherActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        view = new WeatherView(findViewById(R.id.content_frame));
-        presenter = new WeatherPresenter();
+        view = new WeatherView(findViewById(R.id.content_frame), findViewById(R.id.drawer));
+        presenter = new WeatherPresenter(this);
     }
 
     @Override

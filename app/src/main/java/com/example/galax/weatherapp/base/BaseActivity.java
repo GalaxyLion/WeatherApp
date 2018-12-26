@@ -99,11 +99,21 @@ public abstract class BaseActivity extends AppCompatActivity {
     public void showInfoDialog(String message){
         View view = getLayoutInflater().inflate(R.layout.info_dialog, null);
         TextView messageLabel = view.findViewById(R.id.message);
-        View okBtn = view.findViewById(R.id.add_city_btn);
+        View okBtn = view.findViewById(R.id.ok_btn);
         messageLabel.setText(message);
         okBtn.setOnClickListener(v -> getBus().post(new HideDialogEvent()));
         bus.post(new ShowDialogEvent(view));
     }
+
+   /* public void showDialogAddLocation(){
+        View view = getLayoutInflater().inflate(R.layout.add_city_dialog, null);
+        EditText search = view.findViewById(R.id.search);
+        View addBtn = view.findViewById(R.id.add_btn);
+        View cancelBtn = view.findViewById(R.id.cancel_btn);
+
+        cancelBtn.setOnClickListener(v -> getBus().post(new HideDialogEvent()));
+        bus.post(new ShowDialogEvent(view));
+    }*/
 
 
 

@@ -1,7 +1,15 @@
 package com.example.galax.weatherapp.screen.weather;
 
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.view.View;
+import android.widget.TextView;
+
 import com.example.galax.weatherapp.R;
 import com.example.galax.weatherapp.base.App;
+import com.example.galax.weatherapp.base.BaseActivity;
+import com.example.galax.weatherapp.base.dialogs.events.HideDialogEvent;
+import com.example.galax.weatherapp.base.dialogs.events.ShowDialogEvent;
 import com.example.galax.weatherapp.data.models.Weather;
 import com.example.galax.weatherapp.data.models.WeatherForecast;
 import com.example.galax.weatherapp.data.repository.WeatherRepository;
@@ -19,7 +27,6 @@ import java.util.concurrent.TimeUnit;
 
 import io.paperdb.Paper;
 import io.reactivex.Observable;
-import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
@@ -32,7 +39,11 @@ public class WeatherPresenter implements WeatherContract.Presenter {
     private CompositeDisposable subscriptions;
     private Navigator navigator;
     private String units;
+    private BaseActivity activity;
 
+    public WeatherPresenter(BaseActivity activity) {
+        this.activity = activity;
+    }
 
     @Override
     public void start(final WeatherContract.View view) {
@@ -45,7 +56,7 @@ public class WeatherPresenter implements WeatherContract.Presenter {
         }else units = Paper.book().read(Constants.UNIT_TEMP);
 
         if(Paper.book().read(Constants.CITY)!=null) {
-            createWeatherView(Paper.book().read(Constants.CITY));
+            showWeatherView(Paper.book().read(Constants.CITY));
             view.showCitySearch(Paper.book().read(Constants.CITY));
         }
 
@@ -68,7 +79,7 @@ public class WeatherPresenter implements WeatherContract.Presenter {
                             }
                         }
 
-                    createWeatherView(Paper.book().read(Constants.CITY));
+                    showWeatherView(Paper.book().read(Constants.CITY));
 
                     },e->{
                             view.showLoading(false);
@@ -78,14 +89,23 @@ public class WeatherPresenter implements WeatherContract.Presenter {
 
         subscriptions.add(view.settingsBtnAction().subscribe(
                 o->{
-
                     openSettings();
                 }
+        ));
+        subscriptions.add(view.menuBtnAction().subscribe(
+           o->{
+             view.openDrawer();
+           }
+        ));
+        subscriptions.add(view.addLocationBtnAction().subscribe(
+           o -> {
+
+           }
         ));
 
     }
 
-    private void createWeatherView(String query) {
+    private void showWeatherView(String query) {
         final Weather[] weather = new Weather[1];
         final WeatherForecast[] weatherForecast = new WeatherForecast[1];
         if (!query.isEmpty()) {
@@ -112,7 +132,6 @@ public class WeatherPresenter implements WeatherContract.Presenter {
                                                     view.setWind(Double.toString(weather[0].getWindSpeed()));
                                                     view.setWeatherIcon(setIconView(weather[0].getConditionId()));
                                                     view.setTemperature(Double.toString(weather[0].getTemp()) + " " + units);
-
                                                     view.setDescription(weather[0].getDescription());
 
 
