@@ -1,5 +1,6 @@
 package com.example.galax.weatherapp.screen.weather;
 
+import android.opengl.Visibility;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.view.LayoutInflater;
@@ -11,6 +12,7 @@ import android.widget.TextView;
 
 import com.example.galax.weatherapp.R;
 import com.example.galax.weatherapp.base.App;
+import com.example.galax.weatherapp.base.BaseActivity;
 import com.example.galax.weatherapp.base.dialogs.events.HideDialogEvent;
 import com.example.galax.weatherapp.base.dialogs.events.ShowDialogEvent;
 import com.example.galax.weatherapp.data.models.WeatherDays;
@@ -25,6 +27,8 @@ import io.reactivex.Observable;
 
 public class WeatherView implements WeatherContract.View {
 
+
+    private BaseActivity activity;
     private View root;
     private EditText searchCity;
     private ImageView weatherIcon;
@@ -46,20 +50,23 @@ public class WeatherView implements WeatherContract.View {
     private TextView textViewHumidity;
     private TextView textViewWind;
     private List<WeatherDays> daysList;
-    private DrawerLayout mDrawerLayout;
 
 
     private View settingsBtn;
     private View menuBtn;
     private View addLocationBtn;
+    private View dialogLocationView;
+    private View addLocationDialogBtn;
+    private EditText searchCityDialog;
+
+
     private DrawerLayout drawer;
 
 
-
-
-    public WeatherView(View root, DrawerLayout drawer) {
+    public WeatherView(View root, DrawerLayout drawer, BaseActivity activity) {
         this.root = root;
         this.drawer = drawer;
+        this.activity = activity;
         initView();
     }
 
@@ -91,28 +98,30 @@ public class WeatherView implements WeatherContract.View {
         addLocationBtn = drawer.findViewById(R.id.add_location_btn);
 
 
+
         initIndicatorWeather(pressure);
         initIndicatorWeather(humidity);
         initIndicatorWeather(wind);
         initForecast();
-
+        initDialogAddLocation();
 
 
     }
 
-    private void initIndicatorWeather(FrameLayout layout){
+
+    private void initIndicatorWeather(FrameLayout layout) {
         View indicatorsWeatherView = inflater.inflate(R.layout.weather_character, layout);
         ImageView imageViewIndicator = indicatorsWeatherView.findViewById(R.id.character_image);
         TextView textViewIndicator = indicatorsWeatherView.findViewById(R.id.character);
-        if(layout == pressure) {
+        if (layout == pressure) {
             imageViewIndicator.setImageResource(R.drawable.ic_pressure);
             textViewPressure = textViewIndicator;
         }
-        if (layout == humidity){
+        if (layout == humidity) {
             imageViewIndicator.setImageResource(R.drawable.ic_humidity);
             textViewHumidity = textViewIndicator;
         }
-        if(layout == wind){
+        if (layout == wind) {
             imageViewIndicator.setImageResource(R.drawable.ic_wind);
             textViewWind = textViewIndicator;
         }
@@ -120,24 +129,22 @@ public class WeatherView implements WeatherContract.View {
     }
 
 
-    private void initForecast(){
+    private void initForecast() {
 
-        for (int i = 0; i <5 ; i++) {
+        for (int i = 0; i < 5; i++) {
             View daysView = inflater.inflate(R.layout.next_days, weatherDays.get(i));
             TextView dayOfWeek = daysView.findViewById(R.id.day);
             ImageView clouds = daysView.findViewById(R.id.cloud);
             TextView temperature = daysView.findViewById(R.id.temperature);
-            daysList.add(new WeatherDays(dayOfWeek,clouds,temperature));
+            daysList.add(new WeatherDays(dayOfWeek, clouds, temperature));
         }
 
 
     }
 
 
-
-
     @Override
-    public void setDaysWeather(int i, String days, int icon, String temp){
+    public void setDaysWeather(int i, String days, int icon, String temp) {
         daysList.get(i).getDay().setText(days.toUpperCase());
         daysList.get(i).getIcon().setImageResource(icon);
         daysList.get(i).getTemp().setText(temp);
@@ -155,18 +162,20 @@ public class WeatherView implements WeatherContract.View {
 
 
     @Override
-    public void setPressure(String pressure){
+    public void setPressure(String pressure) {
         String s = pressure + " " + App.getInstance().getString(R.string.hectopascal);
 
         textViewPressure.setText(s);
     }
+
     @Override
-    public void setHumidity(String humidity){
+    public void setHumidity(String humidity) {
         textViewHumidity.setText(humidity + " %");
     }
+
     @Override
-    public void setWind(String wind){
-        String s = wind + " "+ App.getInstance().getString(R.string.metr_seconds);
+    public void setWind(String wind) {
+        String s = wind + " " + App.getInstance().getString(R.string.metr_seconds);
         textViewWind.setText(s);
     }
 
@@ -187,17 +196,19 @@ public class WeatherView implements WeatherContract.View {
 
     @Override
     public void showLoading(boolean show) {
-        progress.setVisibility(show?View.VISIBLE:View.GONE);
+        progress.setVisibility(show ? View.VISIBLE : View.GONE);
     }
 
     @Override
     public void showEmpty(boolean show) {
-        empty.setVisibility(show?View.VISIBLE:View.GONE);
+        empty.setVisibility(show ? View.VISIBLE : View.GONE);
     }
+
     @Override
     public void showResult(boolean show) {
-        searchResult.setVisibility(show?View.VISIBLE:View.GONE);
+        searchResult.setVisibility(show ? View.VISIBLE : View.GONE);
     }
+
     @Override
     public Observable<Object> settingsBtnAction() {
         return RxView.clicks(settingsBtn);
@@ -217,6 +228,34 @@ public class WeatherView implements WeatherContract.View {
     public void openDrawer() {
         drawer.openDrawer(GravityCompat.START);
     }
+
+    @Override
+    public void showDialogAddLocation(boolean show) {
+        dialogLocationView.setVisibility(show?View.VISIBLE:View.GONE);
+        activity.getBus().post(new ShowDialogEvent(dialogLocationView));
+    }
+
+    private void initDialogAddLocation() {
+        dialogLocationView = inflater.inflate(R.layout.add_city_dialog, null);
+        View cancelBtn = dialogLocationView.findViewById(R.id.cancel_btn);
+        addLocationDialogBtn = dialogLocationView.findViewById(R.id.add_btn);
+        searchCityDialog = dialogLocationView.findViewById(R.id.search);
+        cancelBtn.setOnClickListener(v -> activity.getBus().post(new HideDialogEvent()));
+        //addLocationDialogBtn.setOnClickListener(v -> activity.getBus().post(new HideDialogEvent()));
+        showDialogAddLocation(false);
+
+    }
+
+    @Override
+    public Observable<Object> addLocationDialogBtnAction() {
+        return RxView.clicks(addLocationDialogBtn);
+    }
+
+    @Override
+    public Observable<CharSequence> searchChangedDialog() {
+        return RxTextView.textChanges(searchCityDialog);
+    }
+
 }
 
 

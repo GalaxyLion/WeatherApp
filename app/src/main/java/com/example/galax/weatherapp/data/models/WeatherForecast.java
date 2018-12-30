@@ -11,6 +11,7 @@ import java.util.Locale;
 
 
 public class WeatherForecast {
+
     private List<Double> temp;
     private List<Integer> conditionId;
 

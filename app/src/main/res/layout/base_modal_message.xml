@@ -6,7 +6,7 @@
     android:clickable="true">
 
     <FrameLayout
-        android:layout_width="280dp"
+        android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:background="@drawable/login_modal_msg_bg"
         android:orientation="vertical"

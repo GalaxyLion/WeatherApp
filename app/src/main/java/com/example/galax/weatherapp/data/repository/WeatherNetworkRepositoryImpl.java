@@ -8,30 +8,34 @@ import com.example.galax.weatherapp.data.models.Weather;
 import com.example.galax.weatherapp.data.models.WeatherForecast;
 import com.example.galax.weatherapp.rest.RestApi;
 import com.example.galax.weatherapp.rest.RestClient;
+import com.example.galax.weatherapp.utils.Constants;
 
+import java.util.List;
 import java.util.Locale;
 
 import io.paperdb.Paper;
+import io.reactivex.Completable;
+import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
-public class WeatherRepositoryImpl implements WeatherRepository {
+public class WeatherNetworkRepositoryImpl implements WeatherRepository {
     private RestApi restApi;
     private WeatherDTOMapper weatherDTOMapper;
     private WeatherForecastDTOMapper weatherForecastDTOMapper;
     String lang;
 
-    public WeatherRepositoryImpl() {
+    public WeatherNetworkRepositoryImpl() {
         restApi = RestClient.createApi();
         weatherDTOMapper = new WeatherDTOMapper();
         weatherForecastDTOMapper = new WeatherForecastDTOMapper();
         lang = Locale.getDefault().getLanguage();
     }
-
+    @Override
     public Observable<Weather> search(String query) {
-        if(Paper.book().read("UNIT_TEMP")!=null) {
-            String unit = Paper.book().read("UNIT_TEMP");
+        if(Paper.book().read(Constants.UNIT_TEMP)!=null) {
+            String unit = Paper.book().read(Constants.UNIT_TEMP);
             if(unit.equals(App.getInstance().getString(R.string.celsius))){
                 return changeUnit(query, "metric");
             }
@@ -59,10 +63,10 @@ public class WeatherRepositoryImpl implements WeatherRepository {
                 .observeOn(AndroidSchedulers.mainThread());
 
     }
-
+    @Override
     public Observable<WeatherForecast> searchForecast(String query) {
-        if(Paper.book().read("UNIT_TEMP")!=null) {
-            String unit = Paper.book().read("UNIT_TEMP");
+        if(Paper.book().read(Constants.UNIT_TEMP)!=null) {
+            String unit = Paper.book().read(Constants.UNIT_TEMP);
             if(unit.equals(App.getInstance().getString(R.string.celsius))){
                 return changeUnitForecast(query, "metric");
             }
@@ -88,5 +92,35 @@ public class WeatherRepositoryImpl implements WeatherRepository {
                 )
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    @Override
+    public Flowable<List<Weather>> getWeather() {
+        return null;
+    }
+
+    @Override
+    public Completable saveWeather(Weather weather) {
+        return Completable.complete();
+    }
+
+    @Override
+    public Completable deleteWeather(Weather weather) {
+        return Completable.complete();
+    }
+
+    @Override
+    public Completable deleteWeatherForecast(WeatherForecast weatherForecast) {
+        return Completable.complete();
+    }
+
+    @Override
+    public Flowable<List<WeatherForecast>> getWeatherForecast() {
+        return null;
+    }
+
+    @Override
+    public Completable saveWeatherForecast(WeatherForecast weatherForecast) {
+        return Completable.complete();
     }
 }

@@ -1,19 +1,14 @@
 package com.example.galax.weatherapp.screen.weather;
 
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.view.View;
-import android.widget.TextView;
+import android.util.Log;
 
 import com.example.galax.weatherapp.R;
 import com.example.galax.weatherapp.base.App;
 import com.example.galax.weatherapp.base.BaseActivity;
-import com.example.galax.weatherapp.base.dialogs.events.HideDialogEvent;
-import com.example.galax.weatherapp.base.dialogs.events.ShowDialogEvent;
 import com.example.galax.weatherapp.data.models.Weather;
 import com.example.galax.weatherapp.data.models.WeatherForecast;
 import com.example.galax.weatherapp.data.repository.WeatherRepository;
-import com.example.galax.weatherapp.data.repository.WeatherRepositoryImpl;
+import com.example.galax.weatherapp.data.repository.WeatherNetworkRepositoryImpl;
 import com.example.galax.weatherapp.services.Navigator;
 import com.example.galax.weatherapp.services.Screen;
 import com.example.galax.weatherapp.services.ScreenType;
@@ -31,6 +26,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
+import timber.log.Timber;
 
 public class WeatherPresenter implements WeatherContract.Presenter {
 
@@ -40,16 +36,15 @@ public class WeatherPresenter implements WeatherContract.Presenter {
     private Navigator navigator;
     private String units;
     private BaseActivity activity;
+    private final Weather[] weather = new Weather[1];
+    private final WeatherForecast[] weatherForecast = new WeatherForecast[1];
 
-    public WeatherPresenter(BaseActivity activity) {
-        this.activity = activity;
-    }
 
     @Override
     public void start(final WeatherContract.View view) {
         this.view = view;
         subscriptions = new CompositeDisposable();
-        repository = new WeatherRepositoryImpl();
+        repository = new WeatherNetworkRepositoryImpl();
         if(Paper.book().read(Constants.UNIT_TEMP) == null) {
             Paper.book().write(Constants.UNIT_TEMP, App.getInstance().getString(R.string.celsius));
             units = Paper.book().read(Constants.UNIT_TEMP);
@@ -99,23 +94,56 @@ public class WeatherPresenter implements WeatherContract.Presenter {
         ));
         subscriptions.add(view.addLocationBtnAction().subscribe(
            o -> {
-
-           }
+                view.showDialogAddLocation(true);
+           },
+                e->{
+                    Timber.d(e.getMessage());
+                }
         ));
+
+        subscriptions.add(view.searchChangedDialog()
+                .debounce(100, TimeUnit.MILLISECONDS)
+        .skip(1)
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(charSequence -> {
+            String query = charSequence.toString().trim();
+            subscriptions.add(getResultWeather(query).subscribeOn(Schedulers.newThread())
+                    .observeOn(AndroidSchedulers.mainThread()).
+                            subscribe(
+                                    result ->{
+                                        if(result){
+                                            subscriptions.add(view.addLocationDialogBtnAction().subscribe(
+                                                    o -> {
+                                                        if(Paper.book().read(Constants.CITY)==null || !Paper.book().read(Constants.CITY).equals(query)){
+                                                            if(Paper.book().read(Constants.CITY)==null){
+                                                                Paper.book().write(Constants.CITY,query);
+                                                            }else {
+                                                                Paper.book().delete(Constants.CITY);
+                                                                Paper.book().write(Constants.CITY,query);
+                                                            }
+                                                        }
+                                                    },
+                                                    e->{
+                                                        Timber.d(e.getMessage());
+                                                    }
+                                            ));
+
+                                        }
+                                    },
+                                    e->{
+                                        Log.d("ERROR CHAR SEQEINCE", "Error this");
+                                        view.showLoading(false);
+                                    }
+                            ));
+        }));
 
     }
 
     private void showWeatherView(String query) {
-        final Weather[] weather = new Weather[1];
-        final WeatherForecast[] weatherForecast = new WeatherForecast[1];
+
         if (!query.isEmpty()) {
             view.showLoading(true);
-            Disposable d = Observable.combineLatest(repository.search(query), repository.searchForecast(query),
-                    (io.reactivex.functions.BiFunction<Weather, WeatherForecast, Boolean>) (w, wf) -> {
-                        weather[0] = w;
-                        weatherForecast[0] = wf;
-                        return w!=null && wf!=null;
-                    }).subscribeOn(Schedulers.newThread())
+            subscriptions.add(getResultWeather(query).subscribeOn(Schedulers.newThread())
                     .observeOn(AndroidSchedulers.mainThread()).
                             subscribe(
                                     result -> {
@@ -163,13 +191,22 @@ public class WeatherPresenter implements WeatherContract.Presenter {
                                     e->{
                                         view.showLoading(false);
                                     }
-                            );
-            subscriptions.add(d);
+                            ));
 
         }else{
             view.showEmpty(true);
             view.showResult(false);
         }
+    }
+
+    Observable <Boolean> getResultWeather(String query){
+        return  Observable.combineLatest(repository.search(query), repository.searchForecast(query),
+                (io.reactivex.functions.BiFunction<Weather, WeatherForecast, Boolean>) (w, wf) -> {
+                    weather[0] = w;
+                    weatherForecast[0] = wf;
+                    return w!=null && wf!=null;
+                }).subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread());
     }
 
     private void openSettings(){

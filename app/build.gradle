@@ -44,4 +44,10 @@ dependencies {
     implementation 'com.android.support:design:27.1.1'
     implementation 'net.danlew:android.joda:2.10.1'
     implementation 'io.paperdb:paperdb:2.6'
+    //room
+    implementation "android.arch.persistence.room:runtime:1.1.1"
+    implementation "android.arch.persistence.room:rxjava2:1.1.1"
+    annotationProcessor "android.arch.persistence.room:compiler:1.1.1"
+    //picasso
+    implementation 'com.squareup.picasso:picasso:2.71828'
 }

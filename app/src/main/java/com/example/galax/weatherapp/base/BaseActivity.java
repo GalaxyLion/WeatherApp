@@ -105,17 +105,6 @@ public abstract class BaseActivity extends AppCompatActivity {
         bus.post(new ShowDialogEvent(view));
     }
 
-   /* public void showDialogAddLocation(){
-        View view = getLayoutInflater().inflate(R.layout.add_city_dialog, null);
-        EditText search = view.findViewById(R.id.search);
-        View addBtn = view.findViewById(R.id.add_btn);
-        View cancelBtn = view.findViewById(R.id.cancel_btn);
-
-        cancelBtn.setOnClickListener(v -> getBus().post(new HideDialogEvent()));
-        bus.post(new ShowDialogEvent(view));
-    }*/
-
-
 
 
     @Override

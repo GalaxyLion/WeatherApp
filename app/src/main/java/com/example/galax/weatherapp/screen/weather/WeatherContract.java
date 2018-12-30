@@ -1,7 +1,11 @@
 package com.example.galax.weatherapp.screen.weather;
 
 
+import com.example.galax.weatherapp.base.BaseActivity;
+import com.example.galax.weatherapp.data.models.Weather;
 import com.example.galax.weatherapp.services.Navigator;
+
+import java.util.List;
 
 import io.reactivex.Observable;
 
@@ -23,10 +27,26 @@ public interface WeatherContract {
         Observable <Object> menuBtnAction();
         Observable <Object> addLocationBtnAction();
         void openDrawer();
+        void showDialogAddLocation(boolean show);
+        Observable<Object> addLocationDialogBtnAction();
+        Observable<CharSequence> searchChangedDialog();
+
     }
     interface Presenter{
         void start(View view);
         void stop();
         void setNavigator(Navigator navigator);
+    }
+
+    interface DataBaseCallback{
+        void onWeatherLoaded(List<Weather> weathers);
+
+        void onWeatherDeleted();
+
+        void onWeatherAdded();
+
+        void onDataNotAvailable();
+
+        void onWeatherUpdated();
     }
 }
