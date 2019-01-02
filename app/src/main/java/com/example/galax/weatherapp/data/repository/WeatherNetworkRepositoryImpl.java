@@ -55,6 +55,7 @@ public class WeatherNetworkRepositoryImpl implements WeatherRepository {
                             Weather weather = null;
                             if (it.getWeather() != null) {
                                 weather = weatherDTOMapper.from(it);
+                                weather.setCity(query);
                             }
                             return weather;
                         }

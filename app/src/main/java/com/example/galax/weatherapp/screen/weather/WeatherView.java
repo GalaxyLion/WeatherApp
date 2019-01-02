@@ -3,6 +3,8 @@ package com.example.galax.weatherapp.screen.weather;
 import android.opengl.Visibility;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
@@ -15,6 +17,7 @@ import com.example.galax.weatherapp.base.App;
 import com.example.galax.weatherapp.base.BaseActivity;
 import com.example.galax.weatherapp.base.dialogs.events.HideDialogEvent;
 import com.example.galax.weatherapp.base.dialogs.events.ShowDialogEvent;
+import com.example.galax.weatherapp.data.models.Weather;
 import com.example.galax.weatherapp.data.models.WeatherDays;
 import com.jakewharton.rxbinding2.view.RxView;
 import com.jakewharton.rxbinding2.widget.RxTextView;
@@ -59,6 +62,8 @@ public class WeatherView implements WeatherContract.View {
     private View addLocationDialogBtn;
     private EditText searchCityDialog;
 
+    private WeatherAdapter weatherAdapter;
+    private RecyclerView cities;
 
     private DrawerLayout drawer;
 
@@ -97,7 +102,7 @@ public class WeatherView implements WeatherContract.View {
         menuBtn = root.findViewById(R.id.menu_btn);
         addLocationBtn = drawer.findViewById(R.id.add_location_btn);
 
-
+        cities = root.findViewById(R.id.cities);
 
         initIndicatorWeather(pressure);
         initIndicatorWeather(humidity);
@@ -240,10 +245,15 @@ public class WeatherView implements WeatherContract.View {
         View cancelBtn = dialogLocationView.findViewById(R.id.cancel_btn);
         addLocationDialogBtn = dialogLocationView.findViewById(R.id.add_btn);
         searchCityDialog = dialogLocationView.findViewById(R.id.search);
-        cancelBtn.setOnClickListener(v -> activity.getBus().post(new HideDialogEvent()));
+        cancelBtn.setOnClickListener(v -> closeDialog());
         //addLocationDialogBtn.setOnClickListener(v -> activity.getBus().post(new HideDialogEvent()));
         showDialogAddLocation(false);
 
+    }
+
+    @Override
+    public void closeDialog(){
+        activity.getBus().post(new HideDialogEvent());
     }
 
     @Override
@@ -254,6 +264,19 @@ public class WeatherView implements WeatherContract.View {
     @Override
     public Observable<CharSequence> searchChangedDialog() {
         return RxTextView.textChanges(searchCityDialog);
+    }
+
+    @Override
+    public void setWeatherList(List<Weather> items) {
+        LinearLayoutManager llm = new LinearLayoutManager(root.getContext(),LinearLayoutManager.VERTICAL,false);
+        weatherAdapter = new WeatherAdapter(items);
+        cities.setLayoutManager(llm);
+        cities.setAdapter(weatherAdapter);
+    }
+
+    @Override
+    public void updateWeatherList(){
+        weatherAdapter.notifyDataSetChanged();
     }
 
 }

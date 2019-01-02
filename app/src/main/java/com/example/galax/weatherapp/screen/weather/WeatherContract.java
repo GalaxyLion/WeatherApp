@@ -30,7 +30,9 @@ public interface WeatherContract {
         void showDialogAddLocation(boolean show);
         Observable<Object> addLocationDialogBtnAction();
         Observable<CharSequence> searchChangedDialog();
-
+        void setWeatherList(List<Weather> items);
+        void updateWeatherList();
+        void closeDialog();
     }
     interface Presenter{
         void start(View view);
@@ -38,15 +40,5 @@ public interface WeatherContract {
         void setNavigator(Navigator navigator);
     }
 
-    interface DataBaseCallback{
-        void onWeatherLoaded(List<Weather> weathers);
 
-        void onWeatherDeleted();
-
-        void onWeatherAdded();
-
-        void onDataNotAvailable();
-
-        void onWeatherUpdated();
-    }
 }

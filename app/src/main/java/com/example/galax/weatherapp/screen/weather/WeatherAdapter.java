@@ -22,12 +22,11 @@ import io.paperdb.Paper;
 public class WeatherAdapter extends RecyclerView.Adapter<WeatherAdapter.ViewHolder> {
 
     private List <Weather> weathers;
-    private WeatherContract.DataBaseCallback callback;
     private String units;
 
-    public WeatherAdapter(List<Weather> weathers, WeatherContract.DataBaseCallback callback) {
+    public WeatherAdapter(List<Weather> weathers) {
         this.weathers = weathers;
-        this.callback = callback;
+
     }
 
     @NonNull
@@ -49,7 +48,7 @@ public class WeatherAdapter extends RecyclerView.Adapter<WeatherAdapter.ViewHold
         holder.temperature.setText(Double.toString(weather.getTemp())+ " " + units);
         holder.city.setText(weather.getCountry());
         holder.weather.setText(weather.getDescription());
-        holder.deleteBtn.setOnClickListener(v -> callback.onWeatherDeleted());
+       // holder.deleteBtn.setOnClickListener(v -> );
 
 
     }

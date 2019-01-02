@@ -9,6 +9,7 @@ public class Weather {
     private String description;
     private double windSpeed;
     private int conditionId;
+    private String city;
 
     public Weather(double temp, int humidity, double pressure, String country, String description, double windSpeed, int conditionId) {
         this.temp = temp;
@@ -18,6 +19,14 @@ public class Weather {
         this.description = description;
         this.windSpeed = windSpeed;
         this.conditionId = conditionId;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
     }
 
     public double getTemp() {
