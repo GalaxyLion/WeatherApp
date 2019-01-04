@@ -2,6 +2,7 @@ package com.example.galax.weatherapp.screen.weather;
 
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,21 +13,26 @@ import com.example.galax.weatherapp.R;
 import com.example.galax.weatherapp.base.App;
 import com.example.galax.weatherapp.data.models.Weather;
 import com.example.galax.weatherapp.data.models.WeatherForecast;
+import com.example.galax.weatherapp.data.repository.WeatherLocalRepositoryImpl;
 import com.example.galax.weatherapp.utils.Constants;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
 import io.paperdb.Paper;
+import io.reactivex.CompletableObserver;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
 
 public class WeatherAdapter extends RecyclerView.Adapter<WeatherAdapter.ViewHolder> {
 
     private List <Weather> weathers;
     private String units;
+    private WeatherLocalRepositoryImpl weatherLocalRepository;
 
-    public WeatherAdapter(List<Weather> weathers) {
+    public WeatherAdapter(List<Weather> weathers, WeatherLocalRepositoryImpl weatherLocalRepository) {
         this.weathers = weathers;
-
+        this.weatherLocalRepository = weatherLocalRepository;
     }
 
     @NonNull
@@ -46,9 +52,25 @@ public class WeatherAdapter extends RecyclerView.Adapter<WeatherAdapter.ViewHold
         Weather weather = weathers.get(position);
         holder.clouds.setImageResource(setIconView(weather.getConditionId()));
         holder.temperature.setText(Double.toString(weather.getTemp())+ " " + units);
-        holder.city.setText(weather.getCountry());
+        holder.city.setText(weather.getCity());
         holder.weather.setText(weather.getDescription());
-       // holder.deleteBtn.setOnClickListener(v -> );
+        holder.deleteBtn.setOnClickListener(v ->{
+                weatherLocalRepository.deleteWeather(weathers.get(position)).subscribe();
+                weathers.remove(position);
+                notifyItemRemoved(position);
+                notifyItemRangeChanged(position,weathers.size());
+
+           /* weatherLocalRepository.getWeather().subscribe(new Consumer<List<Weather>>() {
+                @Override
+                public void accept(@io.reactivex.annotations.NonNull List<Weather> weathers) throws Exception {
+                    if(weathers!=null) {
+                        Log.d("Weather size is ", Integer.toString(weathers.size()));
+                    }
+                }
+            });*/
+
+        });
+
 
 
     }

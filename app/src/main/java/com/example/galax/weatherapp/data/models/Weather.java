@@ -1,5 +1,7 @@
 package com.example.galax.weatherapp.data.models;
 
+import android.util.Log;
+
 public class Weather {
 
     private double temp;
@@ -10,6 +12,7 @@ public class Weather {
     private double windSpeed;
     private int conditionId;
     private String city;
+    private Long id;
 
     public Weather(double temp, int humidity, double pressure, String country, String description, double windSpeed, int conditionId) {
         this.temp = temp;
@@ -19,6 +22,26 @@ public class Weather {
         this.description = description;
         this.windSpeed = windSpeed;
         this.conditionId = conditionId;
+    }
+
+    public Weather(double temp, int humidity, double pressure, String country, String description, double windSpeed, int conditionId, String city, Long id) {
+        this.temp = temp;
+        this.humidity = humidity;
+        this.pressure = pressure;
+        this.country = country;
+        this.description = description;
+        this.windSpeed = windSpeed;
+        this.conditionId = conditionId;
+        this.city = city;
+        this.id = id;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getCity() {

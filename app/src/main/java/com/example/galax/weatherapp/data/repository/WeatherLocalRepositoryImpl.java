@@ -18,6 +18,7 @@ import java.util.List;
 
 import io.reactivex.Completable;
 import io.reactivex.Flowable;
+import io.reactivex.Maybe;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
@@ -46,7 +47,7 @@ public class WeatherLocalRepositoryImpl implements WeatherRepository {
     }
 
     @Override
-    public Flowable<List<Weather>> getWeather() {
+    public Maybe<List<Weather>> getWeather() {
         return weatherDB.daoAccess().getWeather()
                 .map(
                         it->{
@@ -74,7 +75,8 @@ public class WeatherLocalRepositoryImpl implements WeatherRepository {
     public Completable deleteWeather(Weather weather) {
         return Completable.fromAction(
                 () -> weatherDB.daoAccess().deleteWeather(weatherEntityMapper.to(weather))
-        ).subscribeOn(Schedulers.io())
+                //() -> weatherDB.daoAccess().deleteWeather()
+        ).subscribeOn(Schedulers.single())
                 .observeOn(AndroidSchedulers.mainThread());
     }
 

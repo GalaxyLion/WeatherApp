@@ -19,6 +19,7 @@ import com.example.galax.weatherapp.base.dialogs.events.HideDialogEvent;
 import com.example.galax.weatherapp.base.dialogs.events.ShowDialogEvent;
 import com.example.galax.weatherapp.data.models.Weather;
 import com.example.galax.weatherapp.data.models.WeatherDays;
+import com.example.galax.weatherapp.data.repository.WeatherLocalRepositoryImpl;
 import com.jakewharton.rxbinding2.view.RxView;
 import com.jakewharton.rxbinding2.widget.RxTextView;
 
@@ -102,7 +103,7 @@ public class WeatherView implements WeatherContract.View {
         menuBtn = root.findViewById(R.id.menu_btn);
         addLocationBtn = drawer.findViewById(R.id.add_location_btn);
 
-        cities = root.findViewById(R.id.cities);
+        cities = drawer.findViewById(R.id.cities);
 
         initIndicatorWeather(pressure);
         initIndicatorWeather(humidity);
@@ -267,15 +268,16 @@ public class WeatherView implements WeatherContract.View {
     }
 
     @Override
-    public void setWeatherList(List<Weather> items) {
-        LinearLayoutManager llm = new LinearLayoutManager(root.getContext(),LinearLayoutManager.VERTICAL,false);
-        weatherAdapter = new WeatherAdapter(items);
+    public void setWeatherList(List<Weather> items, WeatherLocalRepositoryImpl weatherLocalRepository) {
+        LinearLayoutManager llm = new LinearLayoutManager(drawer.getContext(),LinearLayoutManager.VERTICAL,false);
+        weatherAdapter = new WeatherAdapter(items, weatherLocalRepository);
         cities.setLayoutManager(llm);
         cities.setAdapter(weatherAdapter);
     }
 
     @Override
     public void updateWeatherList(){
+        //weatherAdapter.notifyItemInserted();
         weatherAdapter.notifyDataSetChanged();
     }
 

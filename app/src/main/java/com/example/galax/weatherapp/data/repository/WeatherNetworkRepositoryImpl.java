@@ -16,6 +16,7 @@ import java.util.Locale;
 import io.paperdb.Paper;
 import io.reactivex.Completable;
 import io.reactivex.Flowable;
+import io.reactivex.Maybe;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
@@ -96,7 +97,7 @@ public class WeatherNetworkRepositoryImpl implements WeatherRepository {
     }
 
     @Override
-    public Flowable<List<Weather>> getWeather() {
+    public Maybe<List<Weather>> getWeather() {
         return null;
     }
 

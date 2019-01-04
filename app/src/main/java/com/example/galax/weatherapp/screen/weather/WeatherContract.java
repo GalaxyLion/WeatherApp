@@ -3,6 +3,7 @@ package com.example.galax.weatherapp.screen.weather;
 
 import com.example.galax.weatherapp.base.BaseActivity;
 import com.example.galax.weatherapp.data.models.Weather;
+import com.example.galax.weatherapp.data.repository.WeatherLocalRepositoryImpl;
 import com.example.galax.weatherapp.services.Navigator;
 
 import java.util.List;
@@ -30,7 +31,7 @@ public interface WeatherContract {
         void showDialogAddLocation(boolean show);
         Observable<Object> addLocationDialogBtnAction();
         Observable<CharSequence> searchChangedDialog();
-        void setWeatherList(List<Weather> items);
+        void setWeatherList(List<Weather> items, WeatherLocalRepositoryImpl weatherLocalRepository);
         void updateWeatherList();
         void closeDialog();
     }

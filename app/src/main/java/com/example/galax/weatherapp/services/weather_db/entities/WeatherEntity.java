@@ -8,9 +8,8 @@ import io.reactivex.annotations.NonNull;
 @Entity
 public class WeatherEntity {
 
-    @PrimaryKey
-    @NonNull
-    Long id;
+    @PrimaryKey(autoGenerate = true)
+    private Long id;
 
 
     private double temp;
@@ -20,11 +19,20 @@ public class WeatherEntity {
     private String description;
     private double windSpeed;
     private int conditionId;
+    private String city;
+
+
 
     public WeatherEntity(){
 
     }
+    public String getCity() {
+        return city;
+    }
 
+    public void setCity(String city) {
+        this.city = city;
+    }
     public Long getId() {
         return id;
     }

@@ -13,7 +13,9 @@ public class WeatherEntityMapper implements Mapper<WeatherEntity,Weather> {
                 data.getCountry(),
                 data.getDescription(),
                 data.getWindSpeed(),
-                data.getConditionId()
+                data.getConditionId(),
+                data.getCity(),
+                data.getId()
         );
     }
 
@@ -27,6 +29,8 @@ public class WeatherEntityMapper implements Mapper<WeatherEntity,Weather> {
         weatherEntity.setDescription(model.getDescription());
         weatherEntity.setWindSpeed(model.getWindSpeed());
         weatherEntity.setConditionId(model.getConditionId());
+        weatherEntity.setCity(model.getCity());
+        weatherEntity.setId(model.getId());
         return weatherEntity;
     }
 }

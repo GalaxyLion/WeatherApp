@@ -23,11 +23,10 @@ import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 import io.paperdb.Paper;
-import io.reactivex.CompletableObserver;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
@@ -35,7 +34,7 @@ import timber.log.Timber;
 public class WeatherPresenter implements WeatherContract.Presenter {
 
     WeatherContract.View view;
-    private WeatherRepository repository;
+    private WeatherRepository weatherNetworkRepository;
     private CompositeDisposable subscriptions;
     private Navigator navigator;
     private String units;
@@ -50,7 +49,9 @@ public class WeatherPresenter implements WeatherContract.Presenter {
     public void start(final WeatherContract.View view) {
         this.view = view;
         subscriptions = new CompositeDisposable();
-        repository = new WeatherNetworkRepositoryImpl();
+        weatherNetworkRepository = new WeatherNetworkRepositoryImpl();
+        weatherLocalRepository = new WeatherLocalRepositoryImpl();
+
         if (Paper.book().read(Constants.UNIT_TEMP) == null) {
             Paper.book().write(Constants.UNIT_TEMP, App.getInstance().getString(R.string.celsius));
             units = Paper.book().read(Constants.UNIT_TEMP);
@@ -63,15 +64,15 @@ public class WeatherPresenter implements WeatherContract.Presenter {
 
         subscriptions.add(weatherLocalRepository.getWeather().subscribe(new Consumer<List<Weather>>() {
             @Override
-            public void accept(List<Weather> weathers) throws Exception {
+            public void accept(@NonNull List<Weather> weathers) throws Exception {
                 if(weathers!=null) {
-                    view.setWeatherList(weathers);
+                    view.setWeatherList(weathers,  weatherLocalRepository);
                 }
             }
         }));
 
 
-        weatherLocalRepository = new WeatherLocalRepositoryImpl();
+
 
         view.showEmpty(true);
         view.showResult(false);
@@ -238,7 +239,7 @@ public class WeatherPresenter implements WeatherContract.Presenter {
     }
 
     private Observable<Boolean> getResultWeather(String query) {
-        return Observable.combineLatest(repository.search(query), repository.searchForecast(query),
+        return Observable.combineLatest(weatherNetworkRepository.search(query), weatherNetworkRepository.searchForecast(query),
                 (io.reactivex.functions.BiFunction<Weather, WeatherForecast, Boolean>) (w, wf) -> {
                     weather[0] = w;
                     weatherForecast[0] = wf;

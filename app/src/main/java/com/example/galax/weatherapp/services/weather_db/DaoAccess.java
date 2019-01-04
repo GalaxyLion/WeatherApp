@@ -13,6 +13,7 @@ import com.example.galax.weatherapp.services.weather_db.entities.WeatherForecast
 import java.util.List;
 
 import io.reactivex.Flowable;
+import io.reactivex.Maybe;
 
 @Dao
 public interface DaoAccess {
@@ -20,7 +21,7 @@ public interface DaoAccess {
     void insertSingleWeather(WeatherEntity weatherEntity);
 
     @Query("SELECT * FROM WeatherEntity")
-    Flowable<List<WeatherEntity>> getWeather();
+    Maybe<List<WeatherEntity>> getWeather();
 
     @Insert
     void insertSingleForecastWeather(WeatherForecastEntity weatherForecastEntity);
