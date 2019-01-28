@@ -13,56 +13,16 @@
         android:background="@color/colorPrimaryDark"
         tools:context=".WeatherActivity">
 
-        <FrameLayout
-            android:id="@+id/menu_btn"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="@id/search"
-            app:layout_constraintEnd_toStartOf="@id/search"
-            app:layout_constraintTop_toTopOf="parent">
+        <include
+            android:id="@+id/toolbar"
+            layout="@layout/toolbar" />
 
-            <ImageView
-                android:id="@+id/menu_icon"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:src="@drawable/ic_menu" />
-
-        </FrameLayout>
-
-        <EditText
-            android:id="@+id/search"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="40dp"
-            android:layout_marginStart="40dp"
-            android:inputType="text"
-            android:maxLines="1"
-            android:textColor="@color/colorWhite"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <FrameLayout
-            android:id="@+id/settings_btn"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="@id/search"
-            app:layout_constraintStart_toEndOf="@id/search"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <ImageView
-                android:id="@+id/settings_icon"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:src="@drawable/ic_settings" />
-
-        </FrameLayout>
 
         <android.support.constraint.ConstraintLayout
             android:id="@+id/search_result"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@+id/search">
+            app:layout_constraintTop_toBottomOf="@+id/toolbar">
 
             <ImageView
                 android:id="@+id/image_weather"
@@ -239,40 +199,53 @@
 
     <android.support.design.widget.NavigationView
         android:id="@+id/navigation_view"
-        android:layout_width="300dp"
+        android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:background="@color/colorDarkSlateGray">
 
-
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/cities"
+        <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:scrollbars="vertical"
-            app:layout_constraintBottom_toTopOf="@+id/add_location_btn" />
+            android:layout_height="match_parent">
 
-        <FrameLayout
-            android:id="@+id/add_location_btn"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            android:layout_marginBottom="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="8dp"
-            android:background="@drawable/add_city_btn"
-            android:padding="10dp">
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/cities"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:scrollbars="vertical"
+                app:layout_constraintBottom_toTopOf="@id/add_location_btn"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:clipToPadding="false"
+                android:padding="@dimen/item_offset"
+                />
 
-            <TextView
-                android:layout_width="wrap_content"
+
+            <FrameLayout
+                android:id="@+id/add_location_btn"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:text="@string/add_location"
-                android:textColor="@color/colorWhite"
-                android:textSize="24sp" />
+                android:layout_marginBottom="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:background="@drawable/add_city_btn"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
 
-        </FrameLayout>
+                android:padding="10dp">
 
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="@string/add_location"
+                    android:textColor="@color/colorWhite"
+                    android:textSize="18sp" />
+
+            </FrameLayout>
+        </android.support.constraint.ConstraintLayout>
     </android.support.design.widget.NavigationView>
 
     <FrameLayout

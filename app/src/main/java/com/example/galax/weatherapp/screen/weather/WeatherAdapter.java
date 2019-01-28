@@ -17,6 +17,7 @@ import com.example.galax.weatherapp.data.repository.WeatherLocalRepositoryImpl;
 import com.example.galax.weatherapp.utils.Constants;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import io.paperdb.Paper;
@@ -59,20 +60,15 @@ public class WeatherAdapter extends RecyclerView.Adapter<WeatherAdapter.ViewHold
                 weathers.remove(position);
                 notifyItemRemoved(position);
                 notifyItemRangeChanged(position,weathers.size());
-
-           /* weatherLocalRepository.getWeather().subscribe(new Consumer<List<Weather>>() {
-                @Override
-                public void accept(@io.reactivex.annotations.NonNull List<Weather> weathers) throws Exception {
-                    if(weathers!=null) {
-                        Log.d("Weather size is ", Integer.toString(weathers.size()));
-                    }
-                }
-            });*/
-
         });
 
 
 
+    }
+
+    public void notifyData(List<Weather> weathers) {
+        this.weathers = weathers;
+        notifyDataSetChanged();
     }
 
     @Override

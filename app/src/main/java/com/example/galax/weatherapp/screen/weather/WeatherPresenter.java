@@ -4,7 +4,6 @@ import android.util.Log;
 
 import com.example.galax.weatherapp.R;
 import com.example.galax.weatherapp.base.App;
-import com.example.galax.weatherapp.base.BaseActivity;
 import com.example.galax.weatherapp.data.models.Weather;
 import com.example.galax.weatherapp.data.models.WeatherForecast;
 import com.example.galax.weatherapp.data.repository.WeatherLocalRepositoryImpl;
@@ -17,17 +16,25 @@ import com.example.galax.weatherapp.utils.Constants;
 
 import org.joda.time.DateTime;
 
+import java.util.Arrays;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 import io.paperdb.Paper;
+import io.reactivex.CompletableObserver;
 import io.reactivex.Observable;
+import io.reactivex.ObservableSource;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Action;
+import io.reactivex.functions.BiFunction;
 import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
+import io.reactivex.functions.Predicate;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
@@ -38,11 +45,10 @@ public class WeatherPresenter implements WeatherContract.Presenter {
     private CompositeDisposable subscriptions;
     private Navigator navigator;
     private String units;
-    private BaseActivity activity;
     private final Weather[] weather = new Weather[1];
     private final WeatherForecast[] weatherForecast = new WeatherForecast[1];
     private WeatherLocalRepositoryImpl weatherLocalRepository;
-
+    private String query = "";
 
 
     @Override
@@ -57,26 +63,25 @@ public class WeatherPresenter implements WeatherContract.Presenter {
             units = Paper.book().read(Constants.UNIT_TEMP);
         } else units = Paper.book().read(Constants.UNIT_TEMP);
 
-        if (Paper.book().read(Constants.CITY) != null) {
+      /*  if (Paper.book().read(Constants.CITY) != null) {
             showWeatherView(Paper.book().read(Constants.CITY));
             view.showCitySearch(Paper.book().read(Constants.CITY));
-        }
+        }*/
 
         subscriptions.add(weatherLocalRepository.getWeather().subscribe(new Consumer<List<Weather>>() {
             @Override
             public void accept(@NonNull List<Weather> weathers) throws Exception {
-                if(weathers!=null) {
-                    view.setWeatherList(weathers,  weatherLocalRepository);
+                if (weathers != null) {
+                    view.setWeatherList(weathers, weatherLocalRepository);
                 }
             }
         }));
 
 
-
-
         view.showEmpty(true);
         view.showResult(false);
-        subscriptions.add(view.searchChanged()
+        view.setEnabledDialogAddBtn(isSaveEnabled());
+      /*  subscriptions.add(view.searchChanged()
                 .debounce(1000, TimeUnit.MILLISECONDS)
                 .skip(1)
                 .observeOn(AndroidSchedulers.mainThread())
@@ -97,18 +102,14 @@ public class WeatherPresenter implements WeatherContract.Presenter {
                             view.showLoading(false);
                         }
 
-                ));
+                ));*/
 
         subscriptions.add(view.settingsBtnAction().subscribe(
                 o -> {
                     openSettings();
                 }
         ));
-        subscriptions.add(view.menuBtnAction().subscribe(
-                o -> {
-                    view.openDrawer();
-                }
-        ));
+
         subscriptions.add(view.addLocationBtnAction().subscribe(
                 o -> {
                     view.showDialogAddLocation(true);
@@ -119,63 +120,86 @@ public class WeatherPresenter implements WeatherContract.Presenter {
         ));
 
         subscriptions.add(view.searchChangedDialog()
-                .debounce(100, TimeUnit.MILLISECONDS)
-                .skip(1)
+                .debounce(500, TimeUnit.MILLISECONDS)
+                .subscribeOn(Schedulers.io())
+                .flatMap(new Function<CharSequence, ObservableSource<Boolean>>() {
+                    @Override
+                    public ObservableSource<Boolean> apply(CharSequence charSequence) throws Exception {
+                        query = charSequence.toString().trim();
+                        return getResultWeather(query);
+                    }
+                })
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(charSequence -> {
-                    String query = charSequence.toString().trim();
-                    subscriptions.add(getResultWeather(query).subscribeOn(Schedulers.newThread())
-                            .observeOn(AndroidSchedulers.mainThread()).
-                                    subscribe(
-                                            result -> {
-                                                if (result) {
-                                                    subscriptions.add(view.addLocationDialogBtnAction().subscribe(
-                                                            o -> {
-                                                                if (Paper.book().read(Constants.CITY) == null || !Paper.book().read(Constants.CITY).equals(query)) {
-                                                                    if (Paper.book().read(Constants.CITY) == null) {
-                                                                        Paper.book().write(Constants.CITY, query);
-                                                                    } else {
-                                                                        Paper.book().delete(Constants.CITY);
-                                                                        Paper.book().write(Constants.CITY, query);
-                                                                    }
-                                                                }
-                                                                weatherLocalRepository.saveWeather(weather[0]).subscribe();
-                                                                view.updateWeatherList();
-                                                                view.closeDialog();
-                                                               /* weatherLocalRepository.saveWeatherForecast(weatherForecast[0]).subscribe(
-                                                                        new CompletableObserver() {
-                                                                            @Override
-                                                                            public void onSubscribe(Disposable d) {
+                .subscribe(
+                        result->{
 
-                                                                            }
+                            view.setEnabledDialogAddBtn(isSaveEnabled());
 
-                                                                            @Override
-                                                                            public void onComplete() {
-                                                                                dataBaseCallback.onWeatherAdded();
-                                                                            }
+                            if (!view.getCity().isEmpty() && !isSaveEnabled()) {
+                                view.showNotEqualCityToast();
+                            }
+                        },
+                        e-> {
+                            view.showLoading(false);
+                            if (!view.getCity().isEmpty()) {
+                                view.showNotEqualCityToast();
+                            }
+                        }
+                ));
+        
 
-                                                                            @Override
-                                                                            public void onError(Throwable e) {
-                                                                                dataBaseCallback.onDataNotAvailable();
-                                                                                Log.d("Error added", "Error callback weather forecast");
-                                                                            }
-                                                                        }
-                                                                );*/
-                                                            },
-                                                            e -> {
-                                                                Timber.d(e.getMessage());
-                                                            }
-                                                    ));
+        subscriptions.add(view.addLocationDialogBtnAction().subscribe(
+                o -> {
+                    if (Paper.book().read(Constants.CITY) == null || !Paper.book().read(Constants.CITY).equals(query)) {
+                        if (Paper.book().read(Constants.CITY) == null) {
+                            Paper.book().write(Constants.CITY, query);
+                        } else {
+                            Paper.book().delete(Constants.CITY);
+                            Paper.book().write(Constants.CITY, query);
+                        }
+                    }
 
-                                                }
-                                            },
-                                            e -> {
-                                                Log.d("ERROR CHAR SEQEINCE", "Error this");
-                                                view.showLoading(false);
-                                            }
-                                    ));
-                }));
+                    weatherLocalRepository.saveWeather(weather[0]).subscribe(new CompletableObserver() {
+                        @Override
+                        public void onSubscribe(Disposable d) {
 
+                        }
+
+                        @Override
+                        public void onComplete() {
+                            subscriptions.add(weatherLocalRepository.getWeather().subscribe(new Consumer<List<Weather>>() {
+                                @Override
+                                public void accept(@NonNull List<Weather> weathers) throws Exception {
+                                    if (weathers != null) {
+                                        view.updateWeatherList(weathers);
+
+                                    }
+                                }
+                            }));
+                            Arrays.fill(weather, null);
+                            Arrays.fill(weatherForecast, null);
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+
+                        }
+                    });
+
+                    view.closeDialog();
+                    view.clearCityText();
+                    view.setEnabledDialogAddBtn(isSaveEnabled());
+
+                },
+                e -> {
+                    Log.d("Error adding", e.getMessage());
+                }
+        ));
+
+    }
+
+    private boolean isSaveEnabled() {
+        return !view.getCity().isEmpty();
     }
 
     private void showWeatherView(String query) {
@@ -239,13 +263,20 @@ public class WeatherPresenter implements WeatherContract.Presenter {
     }
 
     private Observable<Boolean> getResultWeather(String query) {
-        return Observable.combineLatest(weatherNetworkRepository.search(query), weatherNetworkRepository.searchForecast(query),
+       return Observable.combineLatest(weatherNetworkRepository.search(query), weatherNetworkRepository.searchForecast(query),
                 (io.reactivex.functions.BiFunction<Weather, WeatherForecast, Boolean>) (w, wf) -> {
                     weather[0] = w;
                     weatherForecast[0] = wf;
                     return w != null && wf != null;
-                }).subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread());
+                })
+               .subscribeOn(Schedulers.newThread())
+               .observeOn(AndroidSchedulers.mainThread())
+               .onErrorReturn(new Function<Throwable, Boolean>() {
+                   @Override
+                   public Boolean apply(Throwable throwable) throws Exception {
+                       return false;
+                   }
+               });
     }
 
     private void openSettings() {
@@ -292,6 +323,7 @@ public class WeatherPresenter implements WeatherContract.Presenter {
 
     @Override
     public void stop() {
+        view.deleteItemCityDecorator();
         view = null;
         subscriptions.dispose();
         subscriptions = null;

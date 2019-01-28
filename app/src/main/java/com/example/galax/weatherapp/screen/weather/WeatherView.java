@@ -1,16 +1,22 @@
 package com.example.galax.weatherapp.screen.weather;
 
-import android.opengl.Visibility;
+
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
+
 
 import com.example.galax.weatherapp.R;
 import com.example.galax.weatherapp.base.App;
@@ -20,6 +26,8 @@ import com.example.galax.weatherapp.base.dialogs.events.ShowDialogEvent;
 import com.example.galax.weatherapp.data.models.Weather;
 import com.example.galax.weatherapp.data.models.WeatherDays;
 import com.example.galax.weatherapp.data.repository.WeatherLocalRepositoryImpl;
+import com.example.galax.weatherapp.ui.ItemDecorator;
+import com.jakewharton.rxbinding2.view.RxMenuItem;
 import com.jakewharton.rxbinding2.view.RxView;
 import com.jakewharton.rxbinding2.widget.RxTextView;
 
@@ -56,8 +64,8 @@ public class WeatherView implements WeatherContract.View {
     private List<WeatherDays> daysList;
 
 
-    private View settingsBtn;
-    private View menuBtn;
+    //private View settingsBtn;
+    //private View menuBtn;
     private View addLocationBtn;
     private View dialogLocationView;
     private View addLocationDialogBtn;
@@ -67,6 +75,8 @@ public class WeatherView implements WeatherContract.View {
     private RecyclerView cities;
 
     private DrawerLayout drawer;
+    private Toolbar toolbar;
+    private ItemDecorator itemDecorator;
 
 
     public WeatherView(View root, DrawerLayout drawer, BaseActivity activity) {
@@ -99,8 +109,8 @@ public class WeatherView implements WeatherContract.View {
         weatherDays.add(root.findViewById(R.id.fifth_day));
         daysList = new ArrayList<>();
 
-        settingsBtn = root.findViewById(R.id.settings_btn);
-        menuBtn = root.findViewById(R.id.menu_btn);
+        //settingsBtn = root.findViewById(R.id.settings_btn);
+        //menuBtn = root.findViewById(R.id.menu_btn);
         addLocationBtn = drawer.findViewById(R.id.add_location_btn);
 
         cities = drawer.findViewById(R.id.cities);
@@ -111,6 +121,10 @@ public class WeatherView implements WeatherContract.View {
         initForecast();
         initDialogAddLocation();
 
+        toolbar = root.findViewById(R.id.toolbar);
+        itemDecorator = new ItemDecorator(activity.getApplicationContext(), R.dimen.item_offset);
+        initToolbar();
+        //activity.getMenuInflater().inflate();
 
     }
 
@@ -135,6 +149,26 @@ public class WeatherView implements WeatherContract.View {
     }
 
 
+    private void initToolbar() {
+
+        toolbar.inflateMenu(R.menu.main_menu);
+        toolbar.setNavigationIcon(R.drawable.ic_menu);
+        toolbar.setNavigationOnClickListener(v -> {
+            openDrawer();
+        });
+
+
+
+       /* toolbar.setTitle("SomeTitle");
+        toolbar.setTitleTextColor(activity.getResources().getColor(R.color.colorWhite));
+        toolbar.setSubtitle("SomeSubtitle");*/
+    }
+
+    @Override
+    public Observable<Object> settingsBtnAction() {
+        return RxMenuItem.clicks(toolbar.getMenu().findItem(R.id.action_settings));
+    }
+
     private void initForecast() {
 
         for (int i = 0; i < 5; i++) {
@@ -156,15 +190,15 @@ public class WeatherView implements WeatherContract.View {
         daysList.get(i).getTemp().setText(temp);
     }
 
-    @Override
+    /*@Override
     public void showCitySearch(String city) {
         searchCity.setText(city);
     }
-
-    @Override
+*/
+    /*@Override
     public Observable<CharSequence> searchChanged() {
         return RxTextView.textChanges(searchCity);
-    }
+    }*/
 
 
     @Override
@@ -215,17 +249,9 @@ public class WeatherView implements WeatherContract.View {
         searchResult.setVisibility(show ? View.VISIBLE : View.GONE);
     }
 
-    @Override
-    public Observable<Object> settingsBtnAction() {
-        return RxView.clicks(settingsBtn);
-    }
 
-    @Override
-    public Observable<Object> menuBtnAction() {
-        return RxView.clicks(menuBtn);
-    }
 
-    @Override
+       @Override
     public Observable<Object> addLocationBtnAction() {
         return RxView.clicks(addLocationBtn);
     }
@@ -272,15 +298,43 @@ public class WeatherView implements WeatherContract.View {
         LinearLayoutManager llm = new LinearLayoutManager(drawer.getContext(),LinearLayoutManager.VERTICAL,false);
         weatherAdapter = new WeatherAdapter(items, weatherLocalRepository);
         cities.setLayoutManager(llm);
+        cities.addItemDecoration(itemDecorator);
         cities.setAdapter(weatherAdapter);
     }
 
     @Override
-    public void updateWeatherList(){
-        //weatherAdapter.notifyItemInserted();
-        weatherAdapter.notifyDataSetChanged();
+    public void updateWeatherList(List<Weather> weatherList){
+        weatherAdapter.notifyData(weatherList);
+        weatherAdapter.notifyItemInserted(weatherList.size()-1);
+        weatherAdapter.notifyItemRangeChanged(weatherList.size()-1,weatherList.size());
+        //weatherAdapter.notifyDataSetChanged();
     }
 
+    @Override
+    public void deleteItemCityDecorator(){
+        cities.removeItemDecoration(itemDecorator);
+    }
+
+    @Override
+    public void showNotEqualCityToast(){
+            Toast.makeText(activity.getApplicationContext(), App.getInstance().getString(R.string.not_exist_city), Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void clearCityText() {
+        searchCityDialog.setText("");
+    }
+
+    @Override
+    public void setEnabledDialogAddBtn(boolean enable){
+        addLocationDialogBtn.setClickable(enable);
+        addLocationDialogBtn.setEnabled(enable);
+    }
+
+    @Override
+    public String getCity(){
+        return searchCityDialog.getText().toString().trim();
+    }
 }
 
 
