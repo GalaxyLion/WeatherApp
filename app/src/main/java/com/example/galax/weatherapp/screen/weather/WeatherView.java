@@ -327,7 +327,6 @@ public class WeatherView implements WeatherContract.View {
 
     @Override
     public void setEnabledDialogAddBtn(boolean enable){
-        addLocationDialogBtn.setClickable(enable);
         addLocationDialogBtn.setEnabled(enable);
     }
 

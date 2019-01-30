@@ -80,7 +80,7 @@ public class WeatherPresenter implements WeatherContract.Presenter {
 
         view.showEmpty(true);
         view.showResult(false);
-        view.setEnabledDialogAddBtn(isSaveEnabled());
+        view.setEnabledDialogAddBtn(false);
       /*  subscriptions.add(view.searchChanged()
                 .debounce(1000, TimeUnit.MILLISECONDS)
                 .skip(1)
@@ -133,11 +133,12 @@ public class WeatherPresenter implements WeatherContract.Presenter {
                 .subscribe(
                         result->{
 
-                            view.setEnabledDialogAddBtn(isSaveEnabled());
+                            view.setEnabledDialogAddBtn(result);
 
-                            if (!view.getCity().isEmpty() && !isSaveEnabled()) {
+                            if (!view.getCity().isEmpty() && !result) {
                                 view.showNotEqualCityToast();
                             }
+
                         },
                         e-> {
                             view.showLoading(false);
@@ -146,7 +147,7 @@ public class WeatherPresenter implements WeatherContract.Presenter {
                             }
                         }
                 ));
-        
+
 
         subscriptions.add(view.addLocationDialogBtnAction().subscribe(
                 o -> {
@@ -188,7 +189,7 @@ public class WeatherPresenter implements WeatherContract.Presenter {
 
                     view.closeDialog();
                     view.clearCityText();
-                    view.setEnabledDialogAddBtn(isSaveEnabled());
+                    view.setEnabledDialogAddBtn(false);
 
                 },
                 e -> {
@@ -198,9 +199,6 @@ public class WeatherPresenter implements WeatherContract.Presenter {
 
     }
 
-    private boolean isSaveEnabled() {
-        return !view.getCity().isEmpty();
-    }
 
     private void showWeatherView(String query) {
 
