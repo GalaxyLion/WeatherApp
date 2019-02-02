@@ -14,6 +14,7 @@ import java.util.List;
 
 import io.reactivex.Flowable;
 import io.reactivex.Maybe;
+import io.reactivex.Single;
 
 @Dao
 public interface DaoAccess {
@@ -28,6 +29,9 @@ public interface DaoAccess {
 
     @Query("SELECT * FROM WeatherForecastEntity")
     Flowable<List<WeatherForecastEntity>> getWeatherForecast();
+
+    @Query("SELECT id FROM WeatherEntity WHERE city = :city LIMIT 1")
+    Single<Long> getIdByCityName(String city);
 
     @Delete
     void deleteWeather(WeatherEntity weatherEntity);

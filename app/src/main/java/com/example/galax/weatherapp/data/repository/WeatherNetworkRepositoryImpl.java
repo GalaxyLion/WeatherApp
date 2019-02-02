@@ -8,6 +8,7 @@ import com.example.galax.weatherapp.data.models.Weather;
 import com.example.galax.weatherapp.data.models.WeatherForecast;
 import com.example.galax.weatherapp.rest.RestApi;
 import com.example.galax.weatherapp.rest.RestClient;
+import com.example.galax.weatherapp.services.weather_db.entities.WeatherEntity;
 import com.example.galax.weatherapp.utils.Constants;
 
 import java.util.List;
@@ -18,6 +19,7 @@ import io.reactivex.Completable;
 import io.reactivex.Flowable;
 import io.reactivex.Maybe;
 import io.reactivex.Observable;
+import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
@@ -124,5 +126,10 @@ public class WeatherNetworkRepositoryImpl implements WeatherRepository {
     @Override
     public Completable saveWeatherForecast(WeatherForecast weatherForecast) {
         return Completable.complete();
+    }
+
+    @Override
+    public Single<Long> getIdByCityName(String city) {
+        return null;
     }
 }

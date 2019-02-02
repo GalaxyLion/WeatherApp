@@ -9,6 +9,7 @@ import io.reactivex.Completable;
 import io.reactivex.Flowable;
 import io.reactivex.Maybe;
 import io.reactivex.Observable;
+import io.reactivex.Single;
 
 public interface WeatherRepository {
   Observable<Weather> search(String query);
@@ -16,6 +17,7 @@ public interface WeatherRepository {
   Maybe<List<Weather>> getWeather();
   Completable saveWeather (Weather weather);
   Completable deleteWeather(Weather weather);
+  Single<Long> getIdByCityName(String city);
 
   Flowable<List<WeatherForecast>> getWeatherForecast();
   Completable saveWeatherForecast (WeatherForecast weatherForecast);

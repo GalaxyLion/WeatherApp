@@ -24,8 +24,11 @@ import java.util.concurrent.TimeUnit;
 
 import io.paperdb.Paper;
 import io.reactivex.CompletableObserver;
+import io.reactivex.Flowable;
+import io.reactivex.Maybe;
 import io.reactivex.Observable;
 import io.reactivex.ObservableSource;
+import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.CompositeDisposable;
@@ -49,7 +52,7 @@ public class WeatherPresenter implements WeatherContract.Presenter {
     private final WeatherForecast[] weatherForecast = new WeatherForecast[1];
     private WeatherLocalRepositoryImpl weatherLocalRepository;
     private String query = "";
-
+    private final Long l = null;
 
     @Override
     public void start(final WeatherContract.View view) {
@@ -120,7 +123,7 @@ public class WeatherPresenter implements WeatherContract.Presenter {
         ));
 
         subscriptions.add(view.searchChangedDialog()
-                .debounce(500, TimeUnit.MILLISECONDS)
+                .debounce(1000, TimeUnit.MILLISECONDS)
                 .subscribeOn(Schedulers.io())
                 .flatMap(new Function<CharSequence, ObservableSource<Boolean>>() {
                     @Override
@@ -160,36 +163,48 @@ public class WeatherPresenter implements WeatherContract.Presenter {
                         }
                     }
 
-                    weatherLocalRepository.saveWeather(weather[0]).subscribe(new CompletableObserver() {
+                    weatherLocalRepository.getIdByCityName(weather[0].getCity()).subscribe(new Consumer<Long>() {
                         @Override
-                        public void onSubscribe(Disposable d) {
-
+                        public void accept(Long aLong) throws Exception {
+                            view.showExistCityToast();
+                            view.clearCityText();
                         }
-
+                    }, new Consumer<Throwable>() {
                         @Override
-                        public void onComplete() {
-                            subscriptions.add(weatherLocalRepository.getWeather().subscribe(new Consumer<List<Weather>>() {
+                        public void accept(Throwable throwable) throws Exception {
+                            weatherLocalRepository.saveWeather(weather[0]).subscribe(new CompletableObserver() {
                                 @Override
-                                public void accept(@NonNull List<Weather> weathers) throws Exception {
-                                    if (weathers != null) {
-                                        view.updateWeatherList(weathers);
+                                public void onSubscribe(Disposable d) {
 
-                                    }
                                 }
-                            }));
-                            Arrays.fill(weather, null);
-                            Arrays.fill(weatherForecast, null);
-                        }
 
-                        @Override
-                        public void onError(Throwable e) {
+                                @Override
+                                public void onComplete() {
+                                    subscriptions.add(weatherLocalRepository.getWeather().subscribe(new Consumer<List<Weather>>() {
+                                        @Override
+                                        public void accept(@NonNull List<Weather> weathers) throws Exception {
+                                            if (weathers != null) {
+                                                view.updateWeatherList(weathers);
+
+                                            }
+                                        }
+                                    }));
+                                    Arrays.fill(weather, null);
+                                    Arrays.fill(weatherForecast, null);
+                                }
+
+                                @Override
+                                public void onError(Throwable e) {
+
+                                }
+                            });
+
+                            view.closeDialog();
+                            view.clearCityText();
+                            view.setEnabledDialogAddBtn(false);
 
                         }
                     });
-
-                    view.closeDialog();
-                    view.clearCityText();
-                    view.setEnabledDialogAddBtn(false);
 
                 },
                 e -> {

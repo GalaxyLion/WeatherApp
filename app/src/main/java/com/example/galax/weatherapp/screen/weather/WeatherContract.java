@@ -39,6 +39,7 @@ public interface WeatherContract {
         void clearCityText();
         void setEnabledDialogAddBtn(boolean enable);
         String getCity();
+        void showExistCityToast();
     }
     interface Presenter{
         void start(View view);

@@ -20,7 +20,10 @@ import io.reactivex.Completable;
 import io.reactivex.Flowable;
 import io.reactivex.Maybe;
 import io.reactivex.Observable;
+import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 
 public class WeatherLocalRepositoryImpl implements WeatherRepository {
@@ -111,5 +114,23 @@ public class WeatherLocalRepositoryImpl implements WeatherRepository {
                 ()-> weatherDB.daoAccess().deleteWeatherForecast(weaherForecastEntityMapper.to(weatherForecast))
         ).subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    @Override
+    public Single<Long> getIdByCityName(String city) {
+        return weatherDB.daoAccess().getIdByCityName(city)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .onErrorReturn(new Function<Throwable, Long>() {
+                    @Override
+                    public Long apply(Throwable throwable) throws Exception {
+                        return null;
+                    }
+                }).doOnSuccess(new Consumer<Long>() {
+                    @Override
+                    public void accept(Long aLong) throws Exception {
+                        return;
+                    }
+                });
     }
 }

@@ -15,4 +15,5 @@
     <string name="add">ДОБАВИТЬ</string>
     <string name="cancel">ЗАКРЫТЬ</string>
     <string name="not_exist_city">Город не существует</string>
+    <string name="exist_city">Город уже есть в списке</string>
 </resources>

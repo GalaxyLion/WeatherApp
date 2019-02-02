@@ -17,4 +17,5 @@
     <string name="add">ADD</string>
     <string name="cancel">CANCEL</string>
     <string name="not_exist_city">City does not exist</string>
+    <string name="exist_city">City already exist</string>
 </resources>

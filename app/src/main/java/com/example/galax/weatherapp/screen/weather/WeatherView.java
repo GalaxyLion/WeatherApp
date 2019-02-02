@@ -321,6 +321,11 @@ public class WeatherView implements WeatherContract.View {
     }
 
     @Override
+    public void showExistCityToast(){
+        Toast.makeText(activity.getApplicationContext(), App.getInstance().getString(R.string.exist_city), Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
     public void clearCityText() {
         searchCityDialog.setText("");
     }
