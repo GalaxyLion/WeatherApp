@@ -15,35 +15,36 @@ import com.example.galax.weatherapp.services.ScreenType;
 import com.example.galax.weatherapp.utils.Constants;
 
 import org.joda.time.DateTime;
+import org.reactivestreams.Publisher;
 
 import java.util.Arrays;
 import java.util.GregorianCalendar;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 import io.paperdb.Paper;
+import io.reactivex.BackpressureStrategy;
+import io.reactivex.Completable;
 import io.reactivex.CompletableObserver;
-import io.reactivex.Flowable;
-import io.reactivex.Maybe;
+import io.reactivex.MaybeSource;
 import io.reactivex.Observable;
 import io.reactivex.ObservableSource;
-import io.reactivex.Single;
+import io.reactivex.SingleSource;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Action;
-import io.reactivex.functions.BiFunction;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
-import io.reactivex.functions.Predicate;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
 public class WeatherPresenter implements WeatherContract.Presenter {
 
-    WeatherContract.View view;
+    private WeatherContract.View view;
     private WeatherRepository weatherNetworkRepository;
     private CompositeDisposable subscriptions;
     private Navigator navigator;
@@ -52,11 +53,12 @@ public class WeatherPresenter implements WeatherContract.Presenter {
     private final WeatherForecast[] weatherForecast = new WeatherForecast[1];
     private WeatherLocalRepositoryImpl weatherLocalRepository;
     private String query = "";
-    private final Long l = null;
+
 
     @Override
     public void start(final WeatherContract.View view) {
         this.view = view;
+
         subscriptions = new CompositeDisposable();
         weatherNetworkRepository = new WeatherNetworkRepositoryImpl();
         weatherLocalRepository = new WeatherLocalRepositoryImpl();
@@ -66,46 +68,45 @@ public class WeatherPresenter implements WeatherContract.Presenter {
             units = Paper.book().read(Constants.UNIT_TEMP);
         } else units = Paper.book().read(Constants.UNIT_TEMP);
 
-      /*  if (Paper.book().read(Constants.CITY) != null) {
-            showWeatherView(Paper.book().read(Constants.CITY));
-            view.showCitySearch(Paper.book().read(Constants.CITY));
-        }*/
-
-        subscriptions.add(weatherLocalRepository.getWeather().subscribe(new Consumer<List<Weather>>() {
-            @Override
-            public void accept(@NonNull List<Weather> weathers) throws Exception {
-                if (weathers != null) {
-                    view.setWeatherList(weathers, weatherLocalRepository);
-                }
-            }
-        }));
-
-
         view.showEmpty(true);
         view.showResult(false);
         view.setEnabledDialogAddBtn(false);
-      /*  subscriptions.add(view.searchChanged()
-                .debounce(1000, TimeUnit.MILLISECONDS)
-                .skip(1)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(charSequence -> {
-                            String query = charSequence.toString().trim();
-                            if (Paper.book().read(Constants.CITY) == null || !Paper.book().read(Constants.CITY).equals(query)) {
-                                if (Paper.book().read(Constants.CITY) == null) {
-                                    Paper.book().write(Constants.CITY, query);
-                                } else {
-                                    Paper.book().delete(Constants.CITY);
-                                    Paper.book().write(Constants.CITY, query);
-                                }
+
+        subscriptions.add(
+                weatherLocalRepository.getWeather()
+                        .subscribeOn(Schedulers.newThread())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .toObservable()
+                        .flatMapIterable(weathers -> {
+                            view.setWeatherList(weathers, weatherLocalRepository);
+                            return weathers;})
+                        .flatMap(weather ->
+                                weatherNetworkRepository
+                                        .search(weather.getCity())
+                                        .flatMapCompletable(w -> weatherLocalRepository.updateWeather(
+                                                w.getTemp(),
+                                                w.getDescription(),
+                                                w.getConditionId(),
+                                                w.getCity())
+                                        )
+                                        .andThen(Observable.just(weather))
+
+                        )
+                        .observeOn(AndroidSchedulers.mainThread()) // = AndroidSchedulers.mainThread()
+                        .toList()
+                        .toObservable()
+                        .flatMap(new Function<List<Weather>, ObservableSource<List<Weather>>>() {
+                            @Override
+                            public ObservableSource<List<Weather>> apply(List<Weather> weathers) throws Exception {
+                                return weatherLocalRepository.getWeather().toObservable();
                             }
+                        })
+                        .subscribe(view::updateList)
+        );
 
-                            showWeatherView(Paper.book().read(Constants.CITY));
 
-                        }, e -> {
-                            view.showLoading(false);
-                        }
 
-                ));*/
+
 
         subscriptions.add(view.settingsBtnAction().subscribe(
                 o -> {
@@ -134,7 +135,7 @@ public class WeatherPresenter implements WeatherContract.Presenter {
                 })
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        result->{
+                        result -> {
 
                             view.setEnabledDialogAddBtn(result);
 
@@ -143,7 +144,7 @@ public class WeatherPresenter implements WeatherContract.Presenter {
                             }
 
                         },
-                        e-> {
+                        e -> {
                             view.showLoading(false);
                             if (!view.getCity().isEmpty()) {
                                 view.showNotEqualCityToast();
@@ -163,47 +164,41 @@ public class WeatherPresenter implements WeatherContract.Presenter {
                         }
                     }
 
-                    weatherLocalRepository.getIdByCityName(weather[0].getCity()).subscribe(new Consumer<Long>() {
-                        @Override
-                        public void accept(Long aLong) throws Exception {
-                            view.showExistCityToast();
-                            view.clearCityText();
-                        }
-                    }, new Consumer<Throwable>() {
-                        @Override
-                        public void accept(Throwable throwable) throws Exception {
-                            weatherLocalRepository.saveWeather(weather[0]).subscribe(new CompletableObserver() {
-                                @Override
-                                public void onSubscribe(Disposable d) {
+                    weatherLocalRepository.getIdByCityName(weather[0].getCity()).subscribe(aLong -> {
+                        view.showExistCityToast();
+                        view.clearCityText();
+                    }, throwable -> {
+                        weatherLocalRepository.saveWeather(weather[0]).subscribe(new CompletableObserver() {
+                            @Override
+                            public void onSubscribe(Disposable d) {
 
-                                }
+                            }
 
-                                @Override
-                                public void onComplete() {
-                                    subscriptions.add(weatherLocalRepository.getWeather().subscribe(new Consumer<List<Weather>>() {
-                                        @Override
-                                        public void accept(@NonNull List<Weather> weathers) throws Exception {
-                                            if (weathers != null) {
-                                                view.updateWeatherList(weathers);
+                            @Override
+                            public void onComplete() {
+                                subscriptions.add(weatherLocalRepository.getWeather().subscribe(new Consumer<List<Weather>>() {
+                                    @Override
+                                    public void accept(@NonNull List<Weather> weathers) throws Exception {
+                                        if (weathers != null) {
+                                            view.addWeatherToList(weathers);
 
-                                            }
                                         }
-                                    }));
-                                    Arrays.fill(weather, null);
-                                    Arrays.fill(weatherForecast, null);
-                                }
+                                    }
+                                }));
+                                Arrays.fill(weather, null);
+                                Arrays.fill(weatherForecast, null);
+                            }
 
-                                @Override
-                                public void onError(Throwable e) {
+                            @Override
+                            public void onError(Throwable e) {
 
-                                }
-                            });
+                            }
+                        });
 
-                            view.closeDialog();
-                            view.clearCityText();
-                            view.setEnabledDialogAddBtn(false);
+                        view.closeDialog();
+                        view.clearCityText();
+                        view.setEnabledDialogAddBtn(false);
 
-                        }
                     });
 
                 },
@@ -219,7 +214,8 @@ public class WeatherPresenter implements WeatherContract.Presenter {
 
         if (!query.isEmpty()) {
             view.showLoading(true);
-            subscriptions.add(getResultWeather(query).subscribeOn(Schedulers.newThread())
+            subscriptions.add(getResultWeather(query)
+                    .subscribeOn(Schedulers.newThread())
                     .observeOn(AndroidSchedulers.mainThread()).
                             subscribe(
                                     result -> {
@@ -276,20 +272,20 @@ public class WeatherPresenter implements WeatherContract.Presenter {
     }
 
     private Observable<Boolean> getResultWeather(String query) {
-       return Observable.combineLatest(weatherNetworkRepository.search(query), weatherNetworkRepository.searchForecast(query),
+        return Observable.combineLatest(weatherNetworkRepository.search(query), weatherNetworkRepository.searchForecast(query),
                 (io.reactivex.functions.BiFunction<Weather, WeatherForecast, Boolean>) (w, wf) -> {
                     weather[0] = w;
                     weatherForecast[0] = wf;
                     return w != null && wf != null;
                 })
-               .subscribeOn(Schedulers.newThread())
-               .observeOn(AndroidSchedulers.mainThread())
-               .onErrorReturn(new Function<Throwable, Boolean>() {
-                   @Override
-                   public Boolean apply(Throwable throwable) throws Exception {
-                       return false;
-                   }
-               });
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .onErrorReturn(new Function<Throwable, Boolean>() {
+                    @Override
+                    public Boolean apply(Throwable throwable) throws Exception {
+                        return false;
+                    }
+                });
     }
 
     private void openSettings() {

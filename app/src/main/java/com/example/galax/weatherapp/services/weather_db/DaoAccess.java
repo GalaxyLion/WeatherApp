@@ -4,6 +4,7 @@ import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.Query;
+import android.arch.persistence.room.Update;
 
 import com.example.galax.weatherapp.data.models.Weather;
 import com.example.galax.weatherapp.data.models.WeatherForecast;
@@ -35,6 +36,10 @@ public interface DaoAccess {
 
     @Delete
     void deleteWeather(WeatherEntity weatherEntity);
+
+
+    @Query("UPDATE WeatherEntity SET temp = :temp, description = :description, conditionId = :conditionId WHERE city = :city")
+    void updateWeather2(double temp, String description, int conditionId, String city);
 
     @Delete
     void deleteWeatherForecast(WeatherForecastEntity weatherForecastEntity);

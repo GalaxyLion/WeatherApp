@@ -1,16 +1,16 @@
 package com.example.galax.weatherapp.services.weather_db.entities;
 
+import android.arch.persistence.db.SupportSQLiteDatabase;
+import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
-
-import io.reactivex.annotations.NonNull;
+import android.arch.persistence.room.migration.Migration;
 
 @Entity
 public class WeatherEntity {
 
     @PrimaryKey(autoGenerate = true)
     private Long id;
-
 
     private double temp;
     private int humidity;
@@ -20,7 +20,6 @@ public class WeatherEntity {
     private double windSpeed;
     private int conditionId;
     private String city;
-
 
 
     public WeatherEntity(){

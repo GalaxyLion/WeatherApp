@@ -18,6 +18,7 @@ public interface WeatherRepository {
   Completable saveWeather (Weather weather);
   Completable deleteWeather(Weather weather);
   Single<Long> getIdByCityName(String city);
+  Completable updateWeather(double temp, String description, int conditionId,  String city);
 
   Flowable<List<WeatherForecast>> getWeatherForecast();
   Completable saveWeatherForecast (WeatherForecast weatherForecast);

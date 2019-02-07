@@ -83,6 +83,8 @@ public class WeatherLocalRepositoryImpl implements WeatherRepository {
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
+
+
     @Override
     public Flowable<List<WeatherForecast>> getWeatherForecast() {
         return weatherDB.daoAccess().getWeatherForecast()
@@ -132,5 +134,15 @@ public class WeatherLocalRepositoryImpl implements WeatherRepository {
                         return;
                     }
                 });
+    }
+
+
+    @Override
+    public Completable updateWeather(double temp, String description,int conditionId, String city) {
+        return  Completable.fromAction(
+                ()-> {
+                    weatherDB.daoAccess().updateWeather2(temp,description,conditionId,city);
+                }).subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
     }
 }

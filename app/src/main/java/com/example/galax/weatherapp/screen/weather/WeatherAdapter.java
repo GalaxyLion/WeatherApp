@@ -19,11 +19,17 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import io.paperdb.Paper;
 import io.reactivex.CompletableObserver;
+import io.reactivex.Observable;
+import io.reactivex.ObservableSource;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
+import io.reactivex.schedulers.Schedulers;
 
 public class WeatherAdapter extends RecyclerView.Adapter<WeatherAdapter.ViewHolder> {
 
@@ -45,12 +51,14 @@ public class WeatherAdapter extends RecyclerView.Adapter<WeatherAdapter.ViewHold
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        Weather weather = weathers.get(position);
+
         if(Paper.book().read(Constants.UNIT_TEMP) == null) {
             Paper.book().write(Constants.UNIT_TEMP, App.getInstance().getString(R.string.celsius));
             units = Paper.book().read(Constants.UNIT_TEMP);
         }else units = Paper.book().read(Constants.UNIT_TEMP);
 
-        Weather weather = weathers.get(position);
+
         holder.clouds.setImageResource(setIconView(weather.getConditionId()));
         holder.temperature.setText(Double.toString(weather.getTemp())+ " " + units);
         holder.city.setText(weather.getCity());
@@ -60,8 +68,14 @@ public class WeatherAdapter extends RecyclerView.Adapter<WeatherAdapter.ViewHold
                 weathers.remove(position);
                 notifyItemRemoved(position);
                 notifyItemRangeChanged(position,weathers.size());
-        });
 
+        });
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
 
 
     }
@@ -91,6 +105,7 @@ public class WeatherAdapter extends RecyclerView.Adapter<WeatherAdapter.ViewHold
             weather = itemView.findViewById(R.id.weather);
             deleteBtn = itemView.findViewById(R.id.delete_btn);
         }
+
     }
     private int setIconView(int conditionId){
 

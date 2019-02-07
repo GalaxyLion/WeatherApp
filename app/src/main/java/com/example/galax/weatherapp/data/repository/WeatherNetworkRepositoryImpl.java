@@ -132,4 +132,10 @@ public class WeatherNetworkRepositoryImpl implements WeatherRepository {
     public Single<Long> getIdByCityName(String city) {
         return null;
     }
+
+
+    @Override
+    public Completable updateWeather(double temp, String description, int conditionId, String city) {
+        return null;
+    }
 }

@@ -12,7 +12,6 @@ import io.reactivex.Observable;
 
 public interface WeatherContract {
     interface View{
-        //Observable<CharSequence> searchChanged();
         void setPressure(String pressure);
         void setHumidity(String humidity);
         void setWind(String wind);
@@ -22,7 +21,6 @@ public interface WeatherContract {
         void showLoading(boolean show);
         void showEmpty(boolean show);
         void showResult(boolean show);
-       // void showCitySearch(String city);
         void setDaysWeather(int i, String days, int icon, String temp);
         Observable <Object> settingsBtnAction();
 
@@ -32,7 +30,7 @@ public interface WeatherContract {
         Observable<Object> addLocationDialogBtnAction();
         Observable<CharSequence> searchChangedDialog();
         void setWeatherList(List<Weather> items, WeatherLocalRepositoryImpl weatherLocalRepository);
-        void updateWeatherList(List<Weather> weatherList);
+        void addWeatherToList(List<Weather> weatherList);
         void closeDialog();
         void deleteItemCityDecorator();
         void showNotEqualCityToast();
@@ -40,6 +38,7 @@ public interface WeatherContract {
         void setEnabledDialogAddBtn(boolean enable);
         String getCity();
         void showExistCityToast();
+        void updateList(List<Weather> weatherList);
     }
     interface Presenter{
         void start(View view);

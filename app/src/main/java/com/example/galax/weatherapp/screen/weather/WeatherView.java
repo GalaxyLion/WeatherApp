@@ -4,6 +4,7 @@ package com.example.galax.weatherapp.screen.weather;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
+import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -42,7 +43,6 @@ public class WeatherView implements WeatherContract.View {
 
     private BaseActivity activity;
     private View root;
-    private EditText searchCity;
     private ImageView weatherIcon;
     private TextView weatherDescription;
     private TextView temperatureText;
@@ -63,9 +63,6 @@ public class WeatherView implements WeatherContract.View {
     private TextView textViewWind;
     private List<WeatherDays> daysList;
 
-
-    //private View settingsBtn;
-    //private View menuBtn;
     private View addLocationBtn;
     private View dialogLocationView;
     private View addLocationDialogBtn;
@@ -89,7 +86,6 @@ public class WeatherView implements WeatherContract.View {
 
     private void initView() {
         inflater = LayoutInflater.from(root.getContext());
-        searchCity = root.findViewById(R.id.search);
         weatherIcon = root.findViewById(R.id.image_weather);
         weatherDescription = root.findViewById(R.id.weather_description);
         temperatureText = root.findViewById(R.id.temperature);
@@ -109,8 +105,6 @@ public class WeatherView implements WeatherContract.View {
         weatherDays.add(root.findViewById(R.id.fifth_day));
         daysList = new ArrayList<>();
 
-        //settingsBtn = root.findViewById(R.id.settings_btn);
-        //menuBtn = root.findViewById(R.id.menu_btn);
         addLocationBtn = drawer.findViewById(R.id.add_location_btn);
 
         cities = drawer.findViewById(R.id.cities);
@@ -157,11 +151,6 @@ public class WeatherView implements WeatherContract.View {
             openDrawer();
         });
 
-
-
-       /* toolbar.setTitle("SomeTitle");
-        toolbar.setTitleTextColor(activity.getResources().getColor(R.color.colorWhite));
-        toolbar.setSubtitle("SomeSubtitle");*/
     }
 
     @Override
@@ -190,15 +179,6 @@ public class WeatherView implements WeatherContract.View {
         daysList.get(i).getTemp().setText(temp);
     }
 
-    /*@Override
-    public void showCitySearch(String city) {
-        searchCity.setText(city);
-    }
-*/
-    /*@Override
-    public Observable<CharSequence> searchChanged() {
-        return RxTextView.textChanges(searchCity);
-    }*/
 
 
     @Override
@@ -303,11 +283,10 @@ public class WeatherView implements WeatherContract.View {
     }
 
     @Override
-    public void updateWeatherList(List<Weather> weatherList){
+    public void addWeatherToList(List<Weather> weatherList){
         weatherAdapter.notifyData(weatherList);
         weatherAdapter.notifyItemInserted(weatherList.size()-1);
         weatherAdapter.notifyItemRangeChanged(weatherList.size()-1,weatherList.size());
-        //weatherAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -338,6 +317,11 @@ public class WeatherView implements WeatherContract.View {
     @Override
     public String getCity(){
         return searchCityDialog.getText().toString().trim();
+    }
+
+    @Override
+    public void updateList(List<Weather> weathers) {
+        weatherAdapter.notifyData(weathers);
     }
 }
 
