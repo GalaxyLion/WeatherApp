@@ -1,6 +1,8 @@
 package com.example.galax.weatherapp.screen.weather;
 
 
+import android.view.View;
+
 import com.example.galax.weatherapp.base.BaseActivity;
 import com.example.galax.weatherapp.data.models.Weather;
 import com.example.galax.weatherapp.data.repository.WeatherLocalRepositoryImpl;
@@ -23,7 +25,6 @@ public interface WeatherContract {
         void showResult(boolean show);
         void setDaysWeather(int i, String days, int icon, String temp);
         Observable <Object> settingsBtnAction();
-
         Observable <Object> addLocationBtnAction();
         void openDrawer();
         void showDialogAddLocation(boolean show);
@@ -39,6 +40,7 @@ public interface WeatherContract {
         String getCity();
         void showExistCityToast();
         void updateList(List<Weather> weatherList);
+        void setTitleToolbar(String title);
     }
     interface Presenter{
         void start(View view);

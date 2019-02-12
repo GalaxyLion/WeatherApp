@@ -3,14 +3,10 @@ package com.example.galax.weatherapp.screen.weather;
 
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBar;
-import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -231,7 +227,7 @@ public class WeatherView implements WeatherContract.View {
 
 
 
-       @Override
+    @Override
     public Observable<Object> addLocationBtnAction() {
         return RxView.clicks(addLocationBtn);
     }
@@ -253,7 +249,6 @@ public class WeatherView implements WeatherContract.View {
         addLocationDialogBtn = dialogLocationView.findViewById(R.id.add_btn);
         searchCityDialog = dialogLocationView.findViewById(R.id.search);
         cancelBtn.setOnClickListener(v -> closeDialog());
-        //addLocationDialogBtn.setOnClickListener(v -> activity.getBus().post(new HideDialogEvent()));
         showDialogAddLocation(false);
 
     }
@@ -276,7 +271,7 @@ public class WeatherView implements WeatherContract.View {
     @Override
     public void setWeatherList(List<Weather> items, WeatherLocalRepositoryImpl weatherLocalRepository) {
         LinearLayoutManager llm = new LinearLayoutManager(drawer.getContext(),LinearLayoutManager.VERTICAL,false);
-        weatherAdapter = new WeatherAdapter(items, weatherLocalRepository);
+        weatherAdapter = new WeatherAdapter(items, weatherLocalRepository, activity.getBus());
         cities.setLayoutManager(llm);
         cities.addItemDecoration(itemDecorator);
         cities.setAdapter(weatherAdapter);
@@ -323,6 +318,13 @@ public class WeatherView implements WeatherContract.View {
     public void updateList(List<Weather> weathers) {
         weatherAdapter.notifyData(weathers);
     }
+
+    @Override
+    public void setTitleToolbar(String title){
+        TextView titleToolbar = (TextView) toolbar.findViewById(R.id.toolbar_title);
+        titleToolbar.setText(title);
+    }
+
 }
 
 

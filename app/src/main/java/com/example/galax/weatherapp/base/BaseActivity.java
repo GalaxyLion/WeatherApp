@@ -130,7 +130,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         Log.i(TAG, " onDestroy()");
-        //bus.unregister(dialogShower);
+        bus.unregister(dialogShower);
         bus.unregister(navigationBackManager);
         super.onDestroy();
     }

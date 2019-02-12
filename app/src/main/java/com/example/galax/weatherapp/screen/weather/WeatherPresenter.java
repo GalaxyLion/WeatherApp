@@ -9,34 +9,30 @@ import com.example.galax.weatherapp.data.models.WeatherForecast;
 import com.example.galax.weatherapp.data.repository.WeatherLocalRepositoryImpl;
 import com.example.galax.weatherapp.data.repository.WeatherRepository;
 import com.example.galax.weatherapp.data.repository.WeatherNetworkRepositoryImpl;
+import com.example.galax.weatherapp.screen.weather.event.ClickCityEvent;
 import com.example.galax.weatherapp.services.Navigator;
 import com.example.galax.weatherapp.services.Screen;
 import com.example.galax.weatherapp.services.ScreenType;
+import com.example.galax.weatherapp.ui.WeatherIcon;
 import com.example.galax.weatherapp.utils.Constants;
+import com.squareup.otto.Subscribe;
 
 import org.joda.time.DateTime;
-import org.reactivestreams.Publisher;
 
 import java.util.Arrays;
 import java.util.GregorianCalendar;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 import io.paperdb.Paper;
-import io.reactivex.BackpressureStrategy;
-import io.reactivex.Completable;
 import io.reactivex.CompletableObserver;
-import io.reactivex.MaybeSource;
 import io.reactivex.Observable;
 import io.reactivex.ObservableSource;
-import io.reactivex.SingleSource;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Action;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
@@ -55,6 +51,7 @@ public class WeatherPresenter implements WeatherContract.Presenter {
     private String query = "";
 
 
+
     @Override
     public void start(final WeatherContract.View view) {
         this.view = view;
@@ -67,6 +64,10 @@ public class WeatherPresenter implements WeatherContract.Presenter {
             Paper.book().write(Constants.UNIT_TEMP, App.getInstance().getString(R.string.celsius));
             units = Paper.book().read(Constants.UNIT_TEMP);
         } else units = Paper.book().read(Constants.UNIT_TEMP);
+
+        if(!getCityFromPaper().isEmpty()){
+            showWeatherView(getCityFromPaper());
+        }
 
         view.showEmpty(true);
         view.showResult(false);
@@ -92,18 +93,17 @@ public class WeatherPresenter implements WeatherContract.Presenter {
                                         .andThen(Observable.just(weather))
 
                         )
-                        .observeOn(AndroidSchedulers.mainThread()) // = AndroidSchedulers.mainThread()
+                        .observeOn(AndroidSchedulers.mainThread())
                         .toList()
                         .toObservable()
                         .flatMap(new Function<List<Weather>, ObservableSource<List<Weather>>>() {
                             @Override
-                            public ObservableSource<List<Weather>> apply(List<Weather> weathers) throws Exception {
+                            public ObservableSource<List<Weather>> apply(List<Weather> weathers) {
                                 return weatherLocalRepository.getWeather().toObservable();
                             }
                         })
                         .subscribe(view::updateList)
         );
-
 
 
 
@@ -123,12 +123,14 @@ public class WeatherPresenter implements WeatherContract.Presenter {
                 }
         ));
 
+
+
         subscriptions.add(view.searchChangedDialog()
                 .debounce(1000, TimeUnit.MILLISECONDS)
                 .subscribeOn(Schedulers.io())
                 .flatMap(new Function<CharSequence, ObservableSource<Boolean>>() {
                     @Override
-                    public ObservableSource<Boolean> apply(CharSequence charSequence) throws Exception {
+                    public ObservableSource<Boolean> apply(CharSequence charSequence) {
                         query = charSequence.toString().trim();
                         return getResultWeather(query);
                     }
@@ -155,14 +157,7 @@ public class WeatherPresenter implements WeatherContract.Presenter {
 
         subscriptions.add(view.addLocationDialogBtnAction().subscribe(
                 o -> {
-                    if (Paper.book().read(Constants.CITY) == null || !Paper.book().read(Constants.CITY).equals(query)) {
-                        if (Paper.book().read(Constants.CITY) == null) {
-                            Paper.book().write(Constants.CITY, query);
-                        } else {
-                            Paper.book().delete(Constants.CITY);
-                            Paper.book().write(Constants.CITY, query);
-                        }
-                    }
+                    rewriteCityPaper(query);
 
                     weatherLocalRepository.getIdByCityName(weather[0].getCity()).subscribe(aLong -> {
                         view.showExistCityToast();
@@ -178,7 +173,7 @@ public class WeatherPresenter implements WeatherContract.Presenter {
                             public void onComplete() {
                                 subscriptions.add(weatherLocalRepository.getWeather().subscribe(new Consumer<List<Weather>>() {
                                     @Override
-                                    public void accept(@NonNull List<Weather> weathers) throws Exception {
+                                    public void accept(@NonNull List<Weather> weathers) {
                                         if (weathers != null) {
                                             view.addWeatherToList(weathers);
 
@@ -209,12 +204,35 @@ public class WeatherPresenter implements WeatherContract.Presenter {
 
     }
 
+    @Subscribe
+    public void onEvent(ClickCityEvent clickCityEvent){
+        rewriteCityPaper(clickCityEvent.getCity());
+        showWeatherView(clickCityEvent.getCity());
+    }
 
-    private void showWeatherView(String query) {
+    private String getCityFromPaper(){
+        String city = "";
+        if(Paper.book().read(Constants.CITY) != null){
+            city = Paper.book().read(Constants.CITY);
+        }
+        return city;
+    }
 
-        if (!query.isEmpty()) {
+    private void rewriteCityPaper(String city){
+        if (Paper.book().read(Constants.CITY) == null || !Paper.book().read(Constants.CITY).equals(city)) {
+            if (Paper.book().read(Constants.CITY) == null) {
+                Paper.book().write(Constants.CITY, city);
+            } else {
+                Paper.book().delete(Constants.CITY);
+                Paper.book().write(Constants.CITY, city);
+            }
+        }
+    }
+
+    private void showWeatherView(String  city) {
+        if (!city.isEmpty()) {
             view.showLoading(true);
-            subscriptions.add(getResultWeather(query)
+            subscriptions.add(getResultWeather(city)
                     .subscribeOn(Schedulers.newThread())
                     .observeOn(AndroidSchedulers.mainThread()).
                             subscribe(
@@ -227,10 +245,11 @@ public class WeatherPresenter implements WeatherContract.Presenter {
                                                     view.showResult(false);
                                                 } else {
                                                     view.showEmpty(false);
+                                                    view.setTitleToolbar(weather[0].getCity());
                                                     view.setPressure(Double.toString(weather[0].getPressure()));
                                                     view.setHumidity(Integer.toString(weather[0].getHumidity()));
                                                     view.setWind(Double.toString(weather[0].getWindSpeed()));
-                                                    view.setWeatherIcon(setIconView(weather[0].getConditionId()));
+                                                    view.setWeatherIcon(WeatherIcon.getIconView(weather[0].getConditionId()));
                                                     view.setTemperature(Double.toString(weather[0].getTemp()) + " " + units);
                                                     view.setDescription(weather[0].getDescription());
 
@@ -244,7 +263,7 @@ public class WeatherPresenter implements WeatherContract.Presenter {
                                                         String nextDay = days.getAsShortText(Locale.getDefault());
                                                         view.setDaysWeather(i,
                                                                 nextDay,
-                                                                setIconView(weatherForecast[0].getConditionId().get(i)),
+                                                                WeatherIcon.getIconView(weatherForecast[0].getConditionId().get(i)),
                                                                 Double.toString(weatherForecast[0].getTemp().get(i)) + " " + units);
                                                     }
 
@@ -273,19 +292,14 @@ public class WeatherPresenter implements WeatherContract.Presenter {
 
     private Observable<Boolean> getResultWeather(String query) {
         return Observable.combineLatest(weatherNetworkRepository.search(query), weatherNetworkRepository.searchForecast(query),
-                (io.reactivex.functions.BiFunction<Weather, WeatherForecast, Boolean>) (w, wf) -> {
+                (w, wf) -> {
                     weather[0] = w;
                     weatherForecast[0] = wf;
                     return w != null && wf != null;
                 })
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .onErrorReturn(new Function<Throwable, Boolean>() {
-                    @Override
-                    public Boolean apply(Throwable throwable) throws Exception {
-                        return false;
-                    }
-                });
+                .onErrorReturn(throwable -> false);
     }
 
     private void openSettings() {
@@ -294,41 +308,6 @@ public class WeatherPresenter implements WeatherContract.Presenter {
         }
     }
 
-    private int setIconView(int conditionId) {
-
-        if (conditionId >= 200 && conditionId < 210) {
-            return R.drawable.ic_thunderstorm_with_rain;
-        }
-        if (conditionId >= 210 && conditionId < 300) {
-            return R.drawable.ic_thunderstorm;
-        }
-        if (conditionId >= 500 && conditionId < 600) {
-            return R.drawable.ic_rain;
-        }
-        if (conditionId >= 600 && conditionId < 700) {
-            return R.drawable.ic_snowy;
-        }
-        if (conditionId >= 300 && conditionId < 500) {
-            return R.drawable.ic_drizzle;
-        }
-        if (conditionId >= 701 && conditionId < 800) {
-            return R.drawable.ic_fog;
-        }
-        if (conditionId == 800) {
-            return R.drawable.ic_clear;
-        }
-        if (conditionId == 801) {
-            return R.drawable.ic_few_clouds;
-        }
-        if (conditionId == 802) {
-            return R.drawable.ic_cloud;
-        }
-        if (conditionId >= 803) {
-            return R.drawable.ic_clouds;
-        }
-
-        return R.drawable.ic_error;
-    }
 
     @Override
     public void stop() {
