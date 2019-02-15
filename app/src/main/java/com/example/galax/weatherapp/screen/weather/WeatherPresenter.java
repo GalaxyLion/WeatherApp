@@ -1,5 +1,8 @@
 package com.example.galax.weatherapp.screen.weather;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.util.Log;
 
 import com.example.galax.weatherapp.R;
@@ -19,6 +22,8 @@ import com.squareup.otto.Subscribe;
 
 import org.joda.time.DateTime;
 
+import java.io.IOException;
+import java.net.InetAddress;
 import java.util.Arrays;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -102,7 +107,12 @@ public class WeatherPresenter implements WeatherContract.Presenter {
                                 return weatherLocalRepository.getWeather().toObservable();
                             }
                         })
-                        .subscribe(view::updateList)
+                        .subscribe(view::updateList,
+                                e->{
+                                    view.showEmpty(false);
+                                    view.showLoading(false);
+                                    view.showCheckInternet(true);
+                                })
         );
 
 
@@ -229,8 +239,22 @@ public class WeatherPresenter implements WeatherContract.Presenter {
         }
     }
 
+    private boolean isInternetAvailable() {
+        Runtime runtime = Runtime.getRuntime();
+        try {
+            Process ipProcess = runtime.exec("/system/bin/ping -c 1 8.8.8.8");
+            int     exitValue = ipProcess.waitFor();
+            return (exitValue == 0);
+        }
+        catch (IOException e)          { e.printStackTrace(); }
+        catch (InterruptedException e) { e.printStackTrace(); }
+
+        return false;
+
+    }
+
     private void showWeatherView(String  city) {
-        if (!city.isEmpty()) {
+        if (!city.isEmpty() && isInternetAvailable()) {
             view.showLoading(true);
             subscriptions.add(getResultWeather(city)
                     .subscribeOn(Schedulers.newThread())
@@ -268,6 +292,7 @@ public class WeatherPresenter implements WeatherContract.Presenter {
                                                     }
 
                                                     view.showResult(true);
+                                                    view.showCheckInternet(false);
                                                 }
                                             } else {
                                                 view.showEmpty(true);
@@ -285,8 +310,9 @@ public class WeatherPresenter implements WeatherContract.Presenter {
                             ));
 
         } else {
-            view.showEmpty(true);
+            view.showCheckInternet(true);
             view.showResult(false);
+            view.showLoading(false);
         }
     }
 

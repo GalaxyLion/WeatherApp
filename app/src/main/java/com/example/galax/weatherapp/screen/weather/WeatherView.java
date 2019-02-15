@@ -45,6 +45,7 @@ public class WeatherView implements WeatherContract.View {
     private View empty;
     private View progress;
     private View searchResult;
+    private View internet;
 
     private FrameLayout pressure;
     private FrameLayout humidity;
@@ -88,6 +89,7 @@ public class WeatherView implements WeatherContract.View {
         empty = root.findViewById(R.id.empty);
         progress = root.findViewById(R.id.progress);
         searchResult = root.findViewById(R.id.search_result);
+        internet = root.findViewById(R.id.check_internet);
 
         pressure = root.findViewById(R.id.pressure);
         humidity = root.findViewById(R.id.humidity);
@@ -219,6 +221,12 @@ public class WeatherView implements WeatherContract.View {
     public void showEmpty(boolean show) {
         empty.setVisibility(show ? View.VISIBLE : View.GONE);
     }
+
+    @Override
+    public void showCheckInternet(boolean show) {
+        internet.setVisibility(show ? View.VISIBLE : View.GONE);
+    }
+
 
     @Override
     public void showResult(boolean show) {

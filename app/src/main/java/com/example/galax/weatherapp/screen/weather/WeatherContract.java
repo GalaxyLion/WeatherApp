@@ -41,6 +41,7 @@ public interface WeatherContract {
         void showExistCityToast();
         void updateList(List<Weather> weatherList);
         void setTitleToolbar(String title);
+        void showCheckInternet(boolean show);
     }
     interface Presenter{
         void start(View view);

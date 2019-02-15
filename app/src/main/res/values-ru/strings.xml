@@ -5,7 +5,7 @@
     <string name="unit_temperature">Единица измерения температуры</string>
     <string name="celsius_str">Цельсий</string>
     <string name="about">О нас</string>
-    <string name="input_city">Введите город</string>
+    <string name="input_city">Добавьте или выберите город</string>
     <string name="next_5_days">Следующие 5 дней</string>
     <string name="metr_seconds">м/с</string>
     <string name="hectopascal">гПа</string>
@@ -16,4 +16,5 @@
     <string name="cancel">ЗАКРЫТЬ</string>
     <string name="not_exist_city">Город не существует</string>
     <string name="exist_city">Город уже есть в списке</string>
+    <string name="check_internet">Проверьте соединение с интернетом</string>
 </resources>

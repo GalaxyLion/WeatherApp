@@ -6,7 +6,7 @@
     <string name="celsius_str">"Celsius"</string>
     <string name="about">About</string>
     <string name="fahrenheit_str">Fahrenheit</string>
-    <string name="input_city">Input city</string>
+    <string name="input_city">Add or select city</string>
     <string name="next_5_days">Next 5 Days</string>
     <string name="celsius" translatable="false">°C</string>
     <string name="metr_seconds">m/s</string>
@@ -18,4 +18,5 @@
     <string name="cancel">CANCEL</string>
     <string name="not_exist_city">City does not exist</string>
     <string name="exist_city">City already exist</string>
+    <string name="check_internet">Check your internet connection</string>
 </resources>
